@@ -520,7 +520,7 @@
             TestSolarmanV5_button.TabIndex = 2;
             TestSolarmanV5_button.Text = "Read register(s) from SolarmanV5";
             TestSolarmanV5_button.UseVisualStyleBackColor = true;
-            TestSolarmanV5_button.Click += TestSolarmanV5_button_Click;
+            TestSolarmanV5_button.Click += ReadRegisters_button_Click;
             // 
             // Log_textBox
             // 
@@ -542,7 +542,7 @@
             TestConnections_button.TabIndex = 5;
             TestConnections_button.Text = "Read from ModBusTCP";
             TestConnections_button.UseVisualStyleBackColor = true;
-            TestConnections_button.Click += TestConnections_button_Click;
+            TestConnections_button.Click += TestModbusTCP_button_Click;
             // 
             // tabPage4
             // 

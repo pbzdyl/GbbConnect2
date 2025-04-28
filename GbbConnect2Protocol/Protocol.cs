@@ -2,18 +2,18 @@
 
 public class Header
 {
-    /// <summary>
-    /// Any string up to 256 characters returned in answer
-    /// </summary>
-    public string? OrderId { get; set; }
 
     public Line[]? Lines { get; set; }
 
     /// <summary>
     /// Error: null -> no error
     /// </summary>
-    public string? Error { get; set; }  
+    public string? Error { get; set; }
 
+    /// <summary>
+    /// Any string up to 256 characters returned in answer
+    /// </summary>
+    public string? OrderId { get; set; }
 
 }
 

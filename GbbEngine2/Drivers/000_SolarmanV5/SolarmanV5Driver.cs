@@ -169,7 +169,48 @@ namespace GbbEngine2.Drivers.SolarmanV5
                     }
                 }
 
-                // @@@
+                // Prepare Frame
+                if (Parameters.IsDriverLog && OurLog != null)
+                {
+                    if (LogSufix != null)
+                        OurLog.OurLog(LogLevel.Information, $"Send ModBus: {LogSufix}: {BitConverter.ToString(write_data)} ");
+                    else
+                        OurLog.OurLog(LogLevel.Information, $"Send ModBus: {BitConverter.ToString(write_data)}");
+                }
+                var Frame = new SolarmanFrame(GetNextSequenceNumber(), SerialNumber);
+                var OutBuf = Frame.CreateFrame(write_data);
+
+                // Send
+                if (Parameters.IsDriverLog2 && OurLog != null)
+                {
+                    OurLog.OurLog(LogLevel.Information, $"Send SolarmanV5: {BitConverter.ToString(OutBuf)}");
+                }
+                int bytesSent = Socket.Send(OutBuf);
+
+                // Receive (wait for my sequence number)
+                byte[] InBuf = new byte[] { };
+                for (int i = 0; i < 10; i++)
+                {
+                    byte[] buffer = new byte[1024];
+                    int bytesReceived = 0;
+                    bytesReceived = Socket.Receive(buffer);
+                    if (bytesReceived == 0)
+                        throw new ApplicationException("Connection Lost (received 0 bytes)");
+                    InBuf = new byte[bytesReceived];
+                    Buffer.BlockCopy(buffer, 0, InBuf, 0, bytesReceived);
+                    if (Parameters.IsDriverLog2 && OurLog != null)
+                    {
+                        OurLog.OurLog(LogLevel.Information, $"Received SolarmanV5: {BitConverter.ToString(InBuf)}");
+                    }
+                    // check Sequence Number
+                    if (Frame.CheckSeqenceNumber(InBuf))
+                        break;
+                }
+
+                // Get ModBUs frame
+                Buf = Frame.GetModBusFrame(InBuf);
+
+
 
                 // Check Modbus CRC
                 var crc = GetCRC(Buf);

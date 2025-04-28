@@ -56,7 +56,7 @@ namespace GbbEngine2.Configuration
         private string? m_GbbVictronWeb_PlantToken;
 
         [ObservableProperty]
-        private string? m_GbbVictronWeb_Mqtt_Address = "gbbconnect-mqtt.gbbsoft.pl";
+        private string? m_GbbVictronWeb_Mqtt_Address = "gbboptimizer-mqtt.gbbsoft.pl";
 
         [ObservableProperty]
         private int? m_GbbVictronWeb_Mqtt_Port = 8883;

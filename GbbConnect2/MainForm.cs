@@ -148,7 +148,7 @@ namespace GbbConnect2
         // Tests
         // ======================================
 
-        private void TestConnections_button_Click(object sender, EventArgs e)
+        private void TestModbusTCP_button_Click(object sender, EventArgs e)
         {
             try
             {
@@ -200,7 +200,7 @@ namespace GbbConnect2
             throw new ApplicationException($"Exceeption from driver: function: {function}, exception: {exception}");
         }
 
-        private async void TestSolarmanV5_button_Click(object sender, EventArgs e)
+        private async void ReadRegisters_button_Click(object sender, EventArgs e)
         {
             try
             {
@@ -216,7 +216,7 @@ namespace GbbConnect2
                             {
 
                                 Log($"Plant: {itm.Name}");
-                                var driver = new GbbEngine2.Drivers.SolarmanV5.SolarmanV5Driver(Program.Parameters, itm.AddressIP, itm.PortNo.Value, itm.SerialNumber ?? 0, null);
+                                var driver = new GbbEngine2.Drivers.SolarmanV5.SolarmanV5Driver(Program.Parameters, itm.AddressIP, itm.PortNo.Value, itm.SerialNumber ?? 0, this);
                                 try
                                 {
 
