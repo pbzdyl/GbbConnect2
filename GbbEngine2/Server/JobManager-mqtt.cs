@@ -250,8 +250,11 @@ namespace GbbEngine2.Server
                 }
 
 
-                var ReqOpt = new JsonSerializerOptions();
-                var Header = JsonSerializer.Deserialize<Header>(seg, ReqOpt);
+                var jsonOptions = new JsonSerializerOptions();
+                jsonOptions.AllowTrailingCommas = true;
+                jsonOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+
+                var Header = JsonSerializer.Deserialize<Header>(seg, jsonOptions);
                 if (Header != null && Header.Lines!=null)
                 {
                     IDriver? drv = null;
@@ -320,7 +323,7 @@ namespace GbbEngine2.Server
                     await Plant.PlantState!.MqttClient!.PublishAsync(
                         new MqttApplicationMessageBuilder()
                        .WithTopic($"{Plant.GbbVictronWeb_PlantId?.ToString()}/ModbusInMqtt/fromDevice")
-                       .WithPayload(JsonSerializer.Serialize(Header, ReqOpt))
+                       .WithPayload(JsonSerializer.Serialize(Header, jsonOptions))
                        .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
                        .Build()
                        , CancellationToken.None);

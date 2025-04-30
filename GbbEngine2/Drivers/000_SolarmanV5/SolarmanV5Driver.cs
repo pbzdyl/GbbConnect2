@@ -135,7 +135,8 @@ namespace GbbEngine2.Drivers.SolarmanV5
 
         // ------------------------------------------------------------------------
         // Write data and and wait for response
-        private const int WAIT_READ_TIME_MS = 100; // 50ms
+        private const int WAIT_READ_TIME_MS = 100; // ms
+        private const int WAIT_AFTER_DISCONNECT = 500; // ms
         private const int WAIT_WRITE_TIME_MS = 3000; // 3s, 8s
         private DateTime? LastSend;
 
@@ -143,14 +144,12 @@ namespace GbbEngine2.Drivers.SolarmanV5
         {
             ArgumentNullException.ThrowIfNull(Socket);
 
-            byte[] Buf = new byte[2048];
-
             if (Socket.Connected)
             {
                 //tb.AppendText($"{DateTime.Now}: Send ModBus: {BitConverter.ToString(write_data)}\r\n");
 
                 // up to 50ms delay
-                if (LastSend!=null)
+                if (LastSend != null)
                 {
                     int DelayMs;
                     if (iswrite)
@@ -169,48 +168,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
                     }
                 }
 
-                // Prepare Frame
-                if (Parameters.IsDriverLog && OurLog != null)
-                {
-                    if (LogSufix != null)
-                        OurLog.OurLog(LogLevel.Information, $"Send ModBus: {LogSufix}: {BitConverter.ToString(write_data)} ");
-                    else
-                        OurLog.OurLog(LogLevel.Information, $"Send ModBus: {BitConverter.ToString(write_data)}");
-                }
-                var Frame = new SolarmanFrame(GetNextSequenceNumber(), SerialNumber);
-                var OutBuf = Frame.CreateFrame(write_data);
-
-                // Send
-                if (Parameters.IsDriverLog2 && OurLog != null)
-                {
-                    OurLog.OurLog(LogLevel.Information, $"Send SolarmanV5: {BitConverter.ToString(OutBuf)}");
-                }
-                int bytesSent = Socket.Send(OutBuf);
-
-                // Receive (wait for my sequence number)
-                byte[] InBuf = new byte[] { };
-                for (int i = 0; i < 10; i++)
-                {
-                    byte[] buffer = new byte[1024];
-                    int bytesReceived = 0;
-                    bytesReceived = Socket.Receive(buffer);
-                    if (bytesReceived == 0)
-                        throw new ApplicationException("Connection Lost (received 0 bytes)");
-                    InBuf = new byte[bytesReceived];
-                    Buffer.BlockCopy(buffer, 0, InBuf, 0, bytesReceived);
-                    if (Parameters.IsDriverLog2 && OurLog != null)
-                    {
-                        OurLog.OurLog(LogLevel.Information, $"Received SolarmanV5: {BitConverter.ToString(InBuf)}");
-                    }
-                    // check Sequence Number
-                    if (Frame.CheckSeqenceNumber(InBuf))
-                        break;
-                }
-
-                // Get ModBUs frame
-                Buf = Frame.GetModBusFrame(InBuf);
-
-
+                byte[] Buf = await SendDataToDevice(write_data);
 
                 // Check Modbus CRC
                 var crc = GetCRC(Buf);
@@ -281,6 +239,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
                 throw new ApplicationException("Connection closed!");
         }
 
+        
         // ======================================
         // Sequence Number
         //
@@ -378,32 +337,71 @@ namespace GbbEngine2.Drivers.SolarmanV5
             {
                 OurLog.OurLog(LogLevel.Information, $"Send SolarmanV5: {BitConverter.ToString(OutBuf)}");
             }
-            await Socket.SendAsync(OutBuf);
 
-            // Receive (wait for my sequence number)
-            byte[] InBuf = new byte[] { };
-            for (int i = 0; i < 10; i++)
-            {
-                byte[] buffer = new byte[1024];
-                int bytesReceived = 0;
-                bytesReceived = Socket.Receive(buffer);
-                if (bytesReceived == 0)
-                    throw new ApplicationException("Connection Lost (received 0 bytes)");
-                InBuf = new byte[bytesReceived];
-                Buffer.BlockCopy(buffer, 0, InBuf, 0, bytesReceived);
-                if (Parameters.IsDriverLog2 && OurLog != null)
-                {
-                    OurLog.OurLog(LogLevel.Information, $"Received SolarmanV5: {BitConverter.ToString(InBuf)}");
-                }
-                // check Sequence Number
-                if (Frame.CheckSeqenceNumber(InBuf))
-                    break;
-            }
+            var InBuf  = await InternalSend(Frame, OutBuf);
 
             // Get ModBUs frame
             byte[] Buf = Frame.GetModBusFrame(InBuf);
             return Buf;
         }
+
+        private async Task<byte[]> InternalSend(SolarmanFrame Frame, byte[] OutBuf)
+        {
+            ArgumentNullException.ThrowIfNull(Socket);
+
+            for (int j = 1; j <= 11; j++)
+            {
+                try
+                {
+                    int bytesSent = await Socket.SendAsync(OutBuf);
+
+                    // Receive (wait for my sequence number)
+                    byte[] InBuf = new byte[] { };
+                    for (int i = 0; i < 10; i++)
+                    {
+                        byte[] buffer = new byte[1024];
+                        int bytesReceived = 0;
+                        bytesReceived = await Socket.ReceiveAsync(buffer);
+                        if (bytesReceived == 0)
+                            throw new ApplicationException("Connection Lost (received 0 bytes)");
+                        InBuf = new byte[bytesReceived];
+                        Buffer.BlockCopy(buffer, 0, InBuf, 0, bytesReceived);
+                        if (Parameters.IsDriverLog2 && OurLog != null)
+                        {
+                            OurLog.OurLog(LogLevel.Information, $"Received SolarmanV5: {BitConverter.ToString(InBuf)}");
+                        }
+                        // check Sequence Number
+                        if (Frame.CheckSeqenceNumber(InBuf))
+                            break;
+                    }
+
+                    return InBuf;
+                }
+                catch (TaskCanceledException)
+                {
+                    throw;
+                }
+                catch (OutOfMemoryException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    if (Parameters.IsDriverLog && OurLog != null)
+                        OurLog.OurLog(LogLevel.Information, $"Send error: {ex.Message}");
+
+                    if (j == 11)
+                        throw;
+
+                    if (Parameters.IsDriverLog && OurLog != null)
+                        OurLog.OurLog(LogLevel.Information, $"Retry: {j}");
+                    Thread.Sleep(WAIT_AFTER_DISCONNECT);
+                    Connect();
+                }
+            }
+            return []; // never return
+        }
+
     }
 
 
