@@ -45,6 +45,9 @@ namespace GbbEngine2.Drivers.SolarmanV5
         {
             ArgumentNullException.ThrowIfNull(IpAddress);
 
+            if (Socket!=null && Socket.Connected)
+                Socket.Close();
+
             IPAddress? _ip;
             if (IPAddress.TryParse(IpAddress, out _ip) == false)
             {
@@ -395,6 +398,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
 
                     if (Parameters.IsDriverLog && OurLog != null)
                         OurLog.OurLog(LogLevel.Information, $"Retry: {j}");
+                    Socket.Close();
                     Thread.Sleep(WAIT_AFTER_DISCONNECT);
                     Connect();
                 }
