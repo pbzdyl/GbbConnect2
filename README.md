@@ -26,7 +26,7 @@ Program every minute sends keepalive messave to mqtt. If connected has been lost
 
 ## Setup in [GbbOptimizer](https://GbbOptimizer.gbbsoft.pl/)
 
-Manual how setup GbbConnect2 with Deye and GbbVictronWeb: [Manual](https://gbbvictronweb.gbbsoft.pl/Manual?Filters.Id=31)
+Manual how setup GbbConnect2 with Deye and GbbVictronWeb: [Manual](https://gbboptimizer.gbbsoft.pl/Manual?Filters.PageNo=31)
 
 ## History
 
