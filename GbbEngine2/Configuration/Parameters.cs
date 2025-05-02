@@ -11,7 +11,7 @@ namespace GbbEngine2.Configuration
 {
     public partial class Parameters : ObservableObject
     {
-        public const string APP_VERSION = "1.0.5";
+        public const string APP_VERSION = "1.0.6";
 
         // ======================================
         public PlantList Plants { get; set; } = new();

@@ -37,11 +37,11 @@
             groupBox2 = new GroupBox();
             label13 = new Label();
             textBox10 = new TextBox();
+            plantsBindingSource = new BindingSource(components);
             ParametersBindingSource = new BindingSource(components);
             textBox11 = new TextBox();
             label14 = new Label();
             textBox4 = new TextBox();
-            plantsBindingSource = new BindingSource(components);
             label5 = new Label();
             textBox5 = new TextBox();
             label6 = new Label();
@@ -89,8 +89,8 @@
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)ParametersBindingSource).BeginInit();
             ((System.ComponentModel.ISupportInitialize)plantsBindingSource).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ParametersBindingSource).BeginInit();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)Plants_DataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)inverterInfoBindingSource).BeginInit();
@@ -164,6 +164,12 @@
             textBox10.Size = new Size(178, 23);
             textBox10.TabIndex = 11;
             // 
+            // plantsBindingSource
+            // 
+            plantsBindingSource.DataMember = "Plants";
+            plantsBindingSource.DataSource = ParametersBindingSource;
+            plantsBindingSource.AddingNew += plantsBindingSource_AddingNew;
+            // 
             // ParametersBindingSource
             // 
             ParametersBindingSource.DataSource = typeof(GbbEngine2.Configuration.Parameters);
@@ -192,12 +198,6 @@
             textBox4.Name = "textBox4";
             textBox4.Size = new Size(178, 23);
             textBox4.TabIndex = 7;
-            // 
-            // plantsBindingSource
-            // 
-            plantsBindingSource.DataMember = "Plants";
-            plantsBindingSource.DataSource = ParametersBindingSource;
-            plantsBindingSource.AddingNew += plantsBindingSource_AddingNew;
             // 
             // label5
             // 
@@ -587,7 +587,7 @@
             linkLabel1.Size = new Size(947, 23);
             linkLabel1.TabIndex = 1;
             linkLabel1.TabStop = true;
-            linkLabel1.Text = "https://github.com/gbbsoft/GbbConnect";
+            linkLabel1.Text = "https://github.com/gbbsoft/GbbConnect2";
             linkLabel1.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // label8
@@ -658,7 +658,7 @@
             Controls.Add(tabControl1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
-            Text = "GbbConnect";
+            Text = "GbbConnect2";
             FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
             Shown += MainForm_Shown;
@@ -667,8 +667,8 @@
             tabPage1.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)ParametersBindingSource).EndInit();
             ((System.ComponentModel.ISupportInitialize)plantsBindingSource).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ParametersBindingSource).EndInit();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)Plants_DataGridView).EndInit();
