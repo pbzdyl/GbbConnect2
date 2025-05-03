@@ -145,7 +145,7 @@
             groupBox2.Size = new Size(385, 149);
             groupBox2.TabIndex = 8;
             groupBox2.TabStop = false;
-            groupBox2.Text = "GbbVictronWeb:";
+            groupBox2.Text = "GbbOptimizer:";
             // 
             // label13
             // 
