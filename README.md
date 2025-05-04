@@ -62,7 +62,7 @@ You can use GbbConnect program to create (and test) configuration file (My Docum
 - create container: docker container create -i -t --name gbbconnect2console gbbconnect2image
 - copy Parameters.xml: docker cp ./Parameters.xml gbbconnect2console:/root/GbbConnect2/Parameters.xml
 - start container: docker start gbbconnect2console
-- make container always running: docker update --restart unless-stopped gbbconnect2
+- make container always running: docker update --restart unless-stopped gbbconnect2console
 
 ## Sample Parameters.xml file
 
