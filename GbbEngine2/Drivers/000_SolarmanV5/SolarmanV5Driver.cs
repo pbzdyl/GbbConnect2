@@ -348,62 +348,75 @@ namespace GbbEngine2.Drivers.SolarmanV5
             return Buf;
         }
 
+        private readonly static SemaphoreSlim _lock = new (1, 1);
+
         private async Task<byte[]> InternalSend(SolarmanFrame Frame, byte[] OutBuf)
         {
             ArgumentNullException.ThrowIfNull(Socket);
 
-            for (int j = 1; j <= 11; j++)
+            await _lock.WaitAsync();
+            try
             {
-                try
+                for (int j = 1; j <= 11; j++)
                 {
-                    int bytesSent = await Socket.SendAsync(OutBuf);
-
-                    // Receive (wait for my sequence number)
-                    byte[] InBuf = new byte[] { };
-                    for (int i = 0; i < 10; i++)
+                    try
                     {
-                        byte[] buffer = new byte[1024];
-                        int bytesReceived = 0;
-                        bytesReceived = await Socket.ReceiveAsync(buffer);
-                        if (bytesReceived == 0)
-                            throw new ApplicationException("Connection Lost (received 0 bytes)");
-                        InBuf = new byte[bytesReceived];
-                        Buffer.BlockCopy(buffer, 0, InBuf, 0, bytesReceived);
-                        if (Parameters.IsDriverLog2 && OurLog != null)
+                        int bytesSent = await Socket.SendAsync(OutBuf);
+
+                        // Receive (wait for my sequence number)
+                        byte[] InBuf = new byte[] { };
+                        for (int i = 0; i < 10; i++)
                         {
-                            OurLog.OurLog(LogLevel.Information, $"Received SolarmanV5: {BitConverter.ToString(InBuf)}");
+                            byte[] buffer = new byte[1024];
+                            int bytesReceived = 0;
+                            bytesReceived = await Socket.ReceiveAsync(buffer);
+                            if (bytesReceived == 0)
+                                throw new ApplicationException("Connection Lost (received 0 bytes)");
+                            InBuf = new byte[bytesReceived];
+                            Buffer.BlockCopy(buffer, 0, InBuf, 0, bytesReceived);
+                            if (Parameters.IsDriverLog2 && OurLog != null)
+                            {
+                                OurLog.OurLog(LogLevel.Information, $"Received SolarmanV5: {BitConverter.ToString(InBuf)}");
+                            }
+                            // check Sequence Number
+                            if (Frame.CheckSeqenceNumber(InBuf))
+                                break;
                         }
-                        // check Sequence Number
-                        if (Frame.CheckSeqenceNumber(InBuf))
-                            break;
+
+                        return InBuf;
                     }
-
-                    return InBuf;
-                }
-                catch (TaskCanceledException)
-                {
-                    throw;
-                }
-                catch (OutOfMemoryException)
-                {
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    if (Parameters.IsDriverLog && OurLog != null)
-                        OurLog.OurLog(LogLevel.Information, $"Send error: {ex.Message}");
-
-                    if (j == 11)
+                    catch (TaskCanceledException)
+                    {
                         throw;
+                    }
+                    catch (OutOfMemoryException)
+                    {
+                        throw;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (Parameters.IsDriverLog && OurLog != null)
+                            OurLog.OurLog(LogLevel.Information, $"Send error: {ex.Message}");
 
-                    if (Parameters.IsDriverLog && OurLog != null)
-                        OurLog.OurLog(LogLevel.Information, $"Retry: {j}");
-                    Socket.Close();
-                    Thread.Sleep(WAIT_AFTER_DISCONNECT);
-                    Connect();
+                        if (j == 11)
+                            throw;
+
+                        if (Parameters.IsDriverLog && OurLog != null)
+                            OurLog.OurLog(LogLevel.Information, $"Retry: {j}");
+                        Socket.Close();
+                        Thread.Sleep(WAIT_AFTER_DISCONNECT);
+                        Connect();
+                    }
                 }
+                return []; // never return
             }
-            return []; // never return
+            finally
+            {
+                // Always release the lock, error or success.
+                _lock.Release();
+            }
+
+
         }
 
     }
