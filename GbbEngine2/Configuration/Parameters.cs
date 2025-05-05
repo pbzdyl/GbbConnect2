@@ -11,7 +11,7 @@ namespace GbbEngine2.Configuration
 {
     public partial class Parameters : ObservableObject
     {
-        public const string APP_VERSION = "1.0.8";
+        public const string APP_VERSION = "1.0.9";
 
         // ======================================
         public PlantList Plants { get; set; } = new();
@@ -204,6 +204,13 @@ namespace GbbEngine2.Configuration
 
         public static string Parameters_GetFileName()
         {
+            string FileName;
+            
+            var Dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            FileName = Path.Combine(Dir, "Parameters.xml");
+            if (File.Exists(FileName))
+                return FileName;
+
             return System.IO.Path.Combine(OurGetUserBaseDirectory(), "Parameters.xml");
         }
 
