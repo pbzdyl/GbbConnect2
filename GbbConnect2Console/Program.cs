@@ -21,9 +21,6 @@ namespace GbbConnect2Console
 
             var FileName = GbbEngine2.Configuration.Parameters.Parameters_GetFileName();
 
-            // create directory
-            Directory.CreateDirectory(Path.GetDirectoryName(FileName)!);
-
             // load parameters
             if (!File.Exists(FileName))
             {

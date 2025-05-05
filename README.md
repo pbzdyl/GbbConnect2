@@ -61,8 +61,8 @@ You can use GbbConnect program to create (and test) configuration file (My Docum
 - enter to GbbConnect2 directory: cd GbbConnect2
 - run from GbbConnect2 directory: docker build . -t gbbconnect2image
 - create container: docker container create -i -t --name gbbconnect2console gbbconnect2image
-- copy to current directory file Parameters.xml (or create based on exmaple below)
-- copy Parameters.xml: docker cp ./Parameters.xml gbbconnect2console:/root/GbbConnect2/Parameters.xml
+- copy to current directory file Parameters.xml from Windows version (c:\Users\<user>\Dokuments\GbbConnect2\Parameters.xml) or create based on exmaple below
+- copy Parameters.xml to container: docker cp ./Parameters.xml gbbconnect2console:/app/Parameters.xml
 - start container: docker start gbbconnect2console
 - make container always running: docker update --restart unless-stopped gbbconnect2console
 
