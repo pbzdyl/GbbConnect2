@@ -255,8 +255,10 @@ namespace GbbEngine2.Server
                 jsonOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
 
                 var Header = JsonSerializer.Deserialize<Header>(seg, jsonOptions);
-                if (Header != null && Header.Lines!=null)
+                if (Header != null)
                 {
+                    Header.GbbVersion = Parameters.APP_VERSION;
+
                     IDriver? drv = null;
                     try
                     {
@@ -277,36 +279,40 @@ namespace GbbEngine2.Server
                                 throw new ApplicationException("Unknown driver no: " + Plant.DriverNo);
                         }
 
-                        for (int i = 0; i < Header.Lines.Length; i++)
+                        if (Header.Lines != null)
                         {
-                            var line = Header.Lines[i];
-                            if (line != null)
+                            for (int i = 0; i < Header.Lines.Length; i++)
                             {
-                                try
+                                var line = Header.Lines[i];
+                                if (line != null)
                                 {
-                                    if (line.Modbus != null)
+                                    try
                                     {
-                                        // send to device
-                                        line.Modbus = GbbLibSmall2.Convert.ButesToString(await drv.SendDataToDevice(GbbLibSmall2.Convert.StringToBytes(line.Modbus)));
+                                        if (line.Modbus != null)
+                                        {
+                                            // send to device
+                                            line.Modbus = GbbLibSmall2.Convert.ButesToString(await drv.SendDataToDevice(GbbLibSmall2.Convert.StringToBytes(line.Modbus)));
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        line.Error = ex.Message;
+                                        // clear rest  Modbus data
+                                        for (; i < Header.Lines.Length; i++)
+                                            Header.Lines[i].Modbus = null;
+                                        break;
                                     }
                                 }
-                                catch (Exception ex)
-                                {
-                                    line.Error = ex.Message;
-                                    // clear rest  Modbus data
-                                    for (i = i + 1; i < Header.Lines.Length; i++)
-                                        Header.Lines[i].Modbus = null;
-                                    break;
-                                }
-                            }
 
+                            }
                         }
                     }
                     catch(Exception ex)
                     {
                         Header.Error = ex.Message;
-                        for (int i = 0; i < Header.Lines.Length; i++)
-                            Header.Lines[i].Modbus = null;
+                        if (Header.Lines!=null)
+                            for (int i = 0; i < Header.Lines.Length; i++)
+                                Header.Lines[i].Modbus = null;
                     }
                     finally
                     {

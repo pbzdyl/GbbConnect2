@@ -15,6 +15,8 @@ public class Header
     /// </summary>
     public string? OrderId { get; set; }
 
+    public string? GbbVersion { get; set; }
+
 }
 
 public class Line
