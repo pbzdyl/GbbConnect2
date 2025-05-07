@@ -16,6 +16,7 @@ public class Header
     public string? OrderId { get; set; }
 
     public string? GbbVersion { get; set; }
+    public string? GbbEnvironment { get; set; }
 
 }
 

@@ -46,6 +46,9 @@ namespace GbbConnect2
         [STAThread]
         static void Main()
         {
+
+            GbbEngine2.Configuration.Parameters.APP_ENVIRONMENT = "Windows";
+
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();

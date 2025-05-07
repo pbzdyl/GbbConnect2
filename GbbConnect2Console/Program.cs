@@ -10,6 +10,8 @@ namespace GbbConnect2Console
         /// <param name="DontWaitForKey">don't wait for key, but just wait forever</param>
         static void Main(bool DontWaitForKey)
         {
+            GbbEngine2.Configuration.Parameters.APP_ENVIRONMENT = "Console";
+
             Console.WriteLine();
             Console.WriteLine("GbbConnect2Console by gbbsoft");
             Console.WriteLine();
