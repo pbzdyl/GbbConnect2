@@ -70,8 +70,23 @@ You can use GbbConnect program to create (and test) configuration file (My Docum
 
 ```
 <?xml version="1.0" encoding="utf-8"?>
-<Parameters Version="1" Server_AutoStart="0" IsVerboseLog="1" IsDriverLog="1" IsDriverLog2="1">
-  <Plant Version="1" Number="1" Name="Any text" DriverNo="0" IsDisabled="0" AddressIP="1.2.3.4" PortNo="8899" SerialNumber="123456"  GbbOptimizer_PlantId="<PlantId>" GbbOptimizer_PlantToken="<PlantToken>" GbbOptimizer_Mqtt_Address="gbboptimizerX-mqtt.gbbsoft.pl" GbbOptimizer_Mqtt_Port="8883" />
+<Parameters Version="1"
+            Server_AutoStart="0"
+            IsVerboseLog="1"
+            IsDriverLog="1"
+            IsDriverLog2="1">
+	<Plant Version="1"
+	       Number="1"
+	       Name="Any text"
+	       DriverNo="0"
+	       IsDisabled="0"
+	       AddressIP="1.2.3.4"
+	       PortNo="8899"
+	       SerialNumber="123456"
+	       GbbOptimizer_PlantId="<PlantId>"
+	       GbbOptimizer_PlantToken="<PlantToken>"
+	       GbbOptimizer_Mqtt_Address="gbboptimizerX-mqtt.gbbsoft.pl"
+	       GbbOptimizer_Mqtt_Port="8883"/>
 </Parameters>
 ```
 
@@ -151,13 +166,14 @@ These instructions assume you are on a Debian 12 based system. Adapt package ins
     chmod +x GbbConnect2Console
     ```
 
-3.  **Run the Application:**
+3. **Parameters.xml** file must be in publish_output_self_contained directory
+
+4.  **Run the Application:**
     You can now run the application. To see available command-line options:
     ```bash
     ./GbbConnect2Console --dont-wait-for-key
     ```
 	
-4. Parameters.xml file must be in publish_output_self_contained directory
 
 # Auto-Starting `GbbConnect2Console` on Linux with systemd (Athor: 6675636b6f6666)
 
