@@ -34,32 +34,21 @@ namespace GbbEngine2.Configuration
         [ObservableProperty]
         private long? m_SerialNumber;
 
-        [ObservableProperty]
-        private bool m_PriceLess0_DisconnectGrid=true;
-
-        //[ObservableProperty]
-        //private string? m_Password;
-
-        //[ObservableProperty]
-        //[NotifyPropertyChangedFor(nameof(Cerbo_UseDirectConn))]
-        //private bool m_Cerbo_UseVRMConn;
-
-
         // ======================================
-        // GbbVictronWeb
+        // GbbOptimizer
         // ======================================
 
         [ObservableProperty]
-        private string? m_GbbVictronWeb_PlantId;
+        private string? m_GbbOptimizer_PlantId;
 
         [ObservableProperty]
-        private string? m_GbbVictronWeb_PlantToken;
+        private string? m_GbbOptimizer_PlantToken;
 
         [ObservableProperty]
-        private string? m_GbbVictronWeb_Mqtt_Address = "gbboptimizer-mqtt.gbbsoft.pl";
+        private string? m_GbbOptimizer_Mqtt_Address = "gbboptimizerX-mqtt.gbbsoft.pl";
 
         [ObservableProperty]
-        private int? m_GbbVictronWeb_Mqtt_Port = 8883;
+        private int? m_GbbOptimizer_Mqtt_Port = 8883;
 
         // ======================================
         // Services state
@@ -115,16 +104,15 @@ namespace GbbEngine2.Configuration
                 xml.WriteAttributeString("PortNo", PortNo.ToString());
             if (SerialNumber!=null)
                 xml.WriteAttributeString("SerialNumber", SerialNumber.ToString());
-            xml.WriteAttributeString("PriceLess0_DisconnectGrid", PriceLess0_DisconnectGrid ? "1" : "0");
 
-            if (GbbVictronWeb_PlantId!=null)
-                xml.WriteAttributeString("GbbVictronWeb_PlantId", GbbVictronWeb_PlantId.ToString());
-            if (GbbVictronWeb_PlantToken!=null)
-                xml.WriteAttributeString("GbbVictronWeb_PlantToken", GbbVictronWeb_PlantToken);
-            if (GbbVictronWeb_Mqtt_Address != null)
-                xml.WriteAttributeString("GbbVictronWeb_Mqtt_Address", GbbVictronWeb_Mqtt_Address);
-            if (GbbVictronWeb_Mqtt_Port != null)
-                xml.WriteAttributeString("GbbVictronWeb_Mqtt_Port", GbbVictronWeb_Mqtt_Port.ToString());
+            if (GbbOptimizer_PlantId != null)
+                xml.WriteAttributeString("GbbOptimizer_PlantId", GbbOptimizer_PlantId.ToString());
+            if (GbbOptimizer_PlantToken != null)
+                xml.WriteAttributeString("GbbOptimizer_PlantToken", GbbOptimizer_PlantToken);
+            if (GbbOptimizer_Mqtt_Address != null)
+                xml.WriteAttributeString("GbbOptimizer_Mqtt_Address", GbbOptimizer_Mqtt_Address);
+            if (GbbOptimizer_Mqtt_Port != null)
+                xml.WriteAttributeString("GbbOptimizer_Mqtt_Port", GbbOptimizer_Mqtt_Port.ToString());
 
             //if (Password != null)
             //    xml.WriteAttributeString("Password", GbbLib.Encryption.AES_Encrypt(cipher, IV, Password));
@@ -177,17 +165,14 @@ namespace GbbEngine2.Configuration
                 if (s != null && long.TryParse(s, out l))
                     ret.SerialNumber = l;
 
-                s = xml.GetAttribute("PriceLess0_DisconnectGrid");
-                if (s != null && int.TryParse(s, out i))
-                    ret.PriceLess0_DisconnectGrid = i!=0;
 
-                ret.GbbVictronWeb_PlantId = xml.GetAttribute("GbbVictronWeb_PlantId");
-                ret.GbbVictronWeb_PlantToken = xml.GetAttribute("GbbVictronWeb_PlantToken");
-                ret.GbbVictronWeb_Mqtt_Address = xml.GetAttribute("GbbVictronWeb_Mqtt_Address");
+                ret.GbbOptimizer_PlantId = xml.GetAttribute("GbbVictronWeb_PlantId") ?? xml.GetAttribute("GbbOptimizer_PlantId");
+                ret.GbbOptimizer_PlantToken = xml.GetAttribute("GbbVictronWeb_PlantToken") ?? xml.GetAttribute("GbbOptimizer_PlantToken");
+                ret.GbbOptimizer_Mqtt_Address = xml.GetAttribute("GbbVictronWeb_Mqtt_Address") ?? xml.GetAttribute("GbbOptimizer_Mqtt_Address");
 
-                s = xml.GetAttribute("GbbVictronWeb_Mqtt_Port");
+                s = xml.GetAttribute("GbbVictronWeb_Mqtt_Port") ?? xml.GetAttribute("GbbOptimizer_Mqtt_Port");
                 if (s != null && int.TryParse(s, out i))
-                    ret.GbbVictronWeb_Mqtt_Port = i;
+                    ret.GbbOptimizer_Mqtt_Port = i;
 
                 if (!xml.IsEmptyElement)
                 {

@@ -13,6 +13,8 @@ namespace GbbEngine2.Server
         // ======================================
         // Plant State
 
+        // Currently not used!
+
         public Plant? Plant;
 
         // ======================================

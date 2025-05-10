@@ -64,11 +64,13 @@ namespace GbbEngine2.Server
 
         private async Task ConnectToMqtt(Parameters Parameters, Plant plant, IMqttClient client, CancellationToken ct, IOurLog log)
         {
-            if (string.IsNullOrWhiteSpace(plant.GbbVictronWeb_PlantId))
+            if (string.IsNullOrWhiteSpace(plant.GbbOptimizer_PlantId))
                 throw new ApplicationException("GbbConnect2: No PlantId!");
+            if (string.IsNullOrWhiteSpace(plant.GbbOptimizer_Mqtt_Address))
+                throw new ApplicationException("GbbConnect2: No Mqtt address!");
 
             var b = new MqttClientOptionsBuilder()
-                .WithClientId($"GbbConnect2_{plant.GbbVictronWeb_PlantId?.ToString()}")
+                .WithClientId($"GbbConnect2_{plant.GbbOptimizer_PlantId?.ToString()}")
                 .WithCleanSession(true)
                 .WithTlsOptions(new MqttClientTlsOptions()
                 {
@@ -76,8 +78,8 @@ namespace GbbEngine2.Server
                     // 2023-12-15: nie ma juz potrzeby
                     //IgnoreCertificateChainErrors = true,
                 })
-                .WithTcpServer(plant.GbbVictronWeb_Mqtt_Address, plant.GbbVictronWeb_Mqtt_Port)
-                .WithCredentials(plant.GbbVictronWeb_PlantId?.ToString(), plant.GbbVictronWeb_PlantToken);
+                .WithTcpServer(plant.GbbOptimizer_Mqtt_Address, plant.GbbOptimizer_Mqtt_Port)
+                .WithCredentials(plant.GbbOptimizer_PlantId?.ToString(), plant.GbbOptimizer_PlantToken);
             //.WithSessionExpiryInterval(2*60); // nie wiadomo w jakich to jest jednostkach!
 
             // connect
@@ -88,7 +90,7 @@ namespace GbbEngine2.Server
             await client.SubscribeAsync(
                 mqttFactory.CreateSubscribeOptionsBuilder()
                 .WithTopicFilter(q =>
-                        q.WithTopic($"{plant.GbbVictronWeb_PlantId?.ToString()}/ModbusInMqtt/toDevice")
+                        q.WithTopic($"{plant.GbbOptimizer_PlantId?.ToString()}/ModbusInMqtt/toDevice")
                         .WithAtLeastOnceQoS()
                         )
                 .Build()
@@ -115,7 +117,7 @@ namespace GbbEngine2.Server
                         try
                         {
                             if (plant.PlantState!=null && plant.PlantState.MqttClient==null
-                                && plant.IsDisabled == 0 && plant.GbbVictronWeb_PlantId != null && plant.GbbVictronWeb_PlantToken != null)
+                                && plant.IsDisabled == 0 && plant.GbbOptimizer_PlantId != null && plant.GbbOptimizer_PlantToken != null)
                             {
                                 log.OurLog(LogLevel.Information, $"{plant.Name}: Starting Mqtt");
                                 var client = mqttFactory.CreateMqttClient();
@@ -178,7 +180,7 @@ namespace GbbEngine2.Server
 
                                 await plant.PlantState!.MqttClient.PublishAsync(
                                     new MqttApplicationMessageBuilder()
-                                    .WithTopic($"{plant.GbbVictronWeb_PlantId?.ToString()}/keepalive")
+                                    .WithTopic($"{plant.GbbOptimizer_PlantId?.ToString()}/keepalive")
                                     .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
                                     .Build()
                                     , ct);
@@ -329,7 +331,7 @@ namespace GbbEngine2.Server
                     // send response
                     await Plant.PlantState!.MqttClient!.PublishAsync(
                         new MqttApplicationMessageBuilder()
-                       .WithTopic($"{Plant.GbbVictronWeb_PlantId?.ToString()}/ModbusInMqtt/fromDevice")
+                       .WithTopic($"{Plant.GbbOptimizer_PlantId?.ToString()}/ModbusInMqtt/fromDevice")
                        .WithPayload(JsonSerializer.Serialize(Header, jsonOptions))
                        .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
                        .Build()
@@ -354,14 +356,14 @@ namespace GbbEngine2.Server
 
                         //await Plant.PlantState!.MqttClient.PublishAsync(
                         //    new MqttApplicationMessageBuilder()
-                        //   .WithTopic($"{Plant.GbbVictronWeb_PlantId.ToString()}/dataresponse")
+                        //   .WithTopic($"{Plant.GbbOptimizer_PlantId.ToString()}/dataresponse")
                         //   .WithPayload(JsonSerializer.Serialize(Res, SerOpt))
                         //   .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
                         //   .Build()
                         //   , CancellationToken.None);
 
                     }
-                    catch(Exception ex2)
+                    catch (Exception ex2)
                     {
                         log.OurLog(LogLevel.Error, $"{Plant.Name}: {ex2.Message}");
                     }

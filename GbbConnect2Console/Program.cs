@@ -16,9 +16,9 @@ namespace GbbConnect2Console
             Console.WriteLine("GbbConnect2Console by gbbsoft");
             Console.WriteLine();
 
-            Console.WriteLine($"Version:                   : {GbbEngine2.Configuration.Parameters.APP_VERSION}");
-            Console.WriteLine($"Parameters file            : {GbbEngine2.Configuration.Parameters.Parameters_GetFileName()}");
-            Console.WriteLine($"Log and statistic directory: {GbbEngine2.Configuration.Parameters.OurGetUserBaseDirectory()}");
+            Console.WriteLine($"Version:         : {GbbEngine2.Configuration.Parameters.APP_VERSION}");
+            Console.WriteLine($"Parameters file  : {GbbEngine2.Configuration.Parameters.Parameters_GetFileName()}");
+            Console.WriteLine($"Log directory    : {GbbEngine2.Configuration.Parameters.OurGetUserBaseDirectory()}");
             Console.WriteLine();
 
             var FileName = GbbEngine2.Configuration.Parameters.Parameters_GetFileName();
@@ -41,7 +41,22 @@ namespace GbbConnect2Console
 
             if (DontWaitForKey)
             {
-                Thread.Sleep(Timeout.Infinite);
+                Console.WriteLine("Running in service mode. Press Ctrl+C to exit.");
+                // Keep the application alive until it's stopped by systemd (Ctrl+C / SIGTERM)
+                var cts = new CancellationTokenSource();
+                Console.CancelKeyPress += (sender, e) => {
+                    Console.WriteLine("Service stopping...");
+                    e.Cancel = true; // Prevent the process from terminating.
+                    cts.Cancel();
+                };
+                try
+                {
+                    Task.Delay(Timeout.Infinite, cts.Token);.
+                }
+                catch (TaskCanceledException)
+                {
+                    // Expected when stopping
+                }
             }
             else
             {

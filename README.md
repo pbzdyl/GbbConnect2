@@ -70,7 +70,220 @@ You can use GbbConnect program to create (and test) configuration file (My Docum
 
 ```
 <?xml version="1.0" encoding="utf-8"?>
-<Parameters Version="1" GbbVictronWeb_Mqtt_Address="gbboptimizer2.gbbsoft.pl" GbbVictronWeb_Mqtt_Port="8883" Server_AutoStart="1" IsVerboseLog="1" IsDriverLog="0" IsDriverLog2="0">
-  <Plant Version="1" Number="1" Name="MyPlant" IsDisabled="0" AddressIP="<Deye dongle ip address>" PortNo="8899" SerialNumber=<Deye dongle SN>" GbbVictronWeb_PlantId="<your PlantId>" GbbVictronWeb_PlantToken="<Your Token>" />
+<Parameters Version="1" Server_AutoStart="0" IsVerboseLog="1" IsDriverLog="1" IsDriverLog2="1">
+  <Plant Version="1" Number="1" Name="Any text" DriverNo="0" IsDisabled="0" AddressIP="1.2.3.4" PortNo="8899" SerialNumber="123456"  GbbOptimizer_PlantId="<PlantId>" GbbOptimizer_PlantToken="<PlantToken>" GbbOptimizer_Mqtt_Address="gbboptimizerX-mqtt.gbbsoft.pl" GbbOptimizer_Mqtt_Port="8883" />
 </Parameters>
 ```
+
+# Compiling on Linux (Debian 12 Example)
+
+This guide explains how to compile the `GbbConnect2Console` application for Linux. The output will be a self-contained, single-file executable that can run on compatible Linux systems without requiring a separate .NET runtime installation.
+
+These instructions assume you are on a Debian 12 based system. Adapt package installation commands for other distributions if necessary.
+
+### Prerequisites
+
+1.  **Operating System:** A Linux distribution (e.g., Debian 12, Ubuntu 22.04+).
+2.  **Git:** To clone the repository.
+    ```bash
+    sudo apt update
+    sudo apt install git -y
+    ```
+3.  **.NET 9.0 SDK (or newer compatible version):** The project targets .NET 9.0.
+    ```bash
+    # Download Microsoft package signing key and repository configuration
+    wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+    sudo dpkg -i packages-microsoft-prod.deb
+    rm packages-microsoft-prod.deb
+
+    # Update package lists and install the .NET 9.0 SDK
+    sudo apt update
+    sudo apt install -y apt-transport-https
+    sudo apt update
+    sudo apt install -y dotnet-sdk-9.0
+    ```
+    Verify the installation:
+    ```bash
+    dotnet --version
+    # Expected output: 9.0.xxx or higher
+    ```
+
+### Compilation Steps
+
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/gbbsoft/GbbConnect2.git
+    cd GbbConnect2
+    ```
+
+2.  **Navigate to the Console Project Directory:**
+    ```bash
+    cd GbbConnect2Console
+    ```
+
+3.  **Clean Previous Build Artifacts (Optional but Recommended for a Fresh Build):**
+    ```bash
+    rm -rf ./bin ./obj ./publish_output_self_contained
+    ```
+
+4.  **Publish the Application:**
+    This command compiles the application in `Release` mode, targets `linux-x64`, creates a self-contained deployment (includes the .NET runtime), and packages it into a single executable file.
+    ```bash
+    dotnet publish -c Release -r linux-x64 --self-contained true -o ./publish_output_self_contained /p:PublishSingleFile=true
+    ```
+    *   `-c Release`: Compiles in Release configuration (optimized).
+    *   `-r linux-x64`: Specifies the target runtime identifier as Linux 64-bit.
+    *   `--self-contained true`: Creates a self-contained deployment.
+    *   `-o ./publish_output_self_contained`: Specifies the output directory for the published files.
+    *   `/p:PublishSingleFile=true`: Packages the application and its dependencies into a single executable.
+
+
+### Running the Compiled Application
+
+1.  **Navigate to the Output Directory:**
+    ```bash
+    cd ./publish_output_self_contained
+    ```
+    You should find the executable `GbbConnect2Console` here.
+
+2.  **Make the File Executable:**
+    ```bash
+    chmod +x GbbConnect2Console
+    ```
+
+3.  **Run the Application:**
+    You can now run the application. To see available command-line options:
+    ```bash
+    ./GbbConnect2Console --dont-wait-for-key
+    ```
+	
+4. Parameters.xml file must be in publish_output_self_contained directory
+
+# Auto-Starting `GbbConnect2Console` on Linux with systemd (Athor: 6675636b6f6666)
+
+This guide will show you how to configure your compiled `GbbConnect2.Console` application to run as a background service on Linux. This service will automatically start when the system boots and restart if it crashes.
+
+**Prerequisites:**
+*   Your `GbbConnect2.Console` application has been compiled for Linux (e.g., into a self-contained executable).
+*   The application supports a command-line argument like `--dont-wait-for-key` to run without waiting for user input.
+*   You have `sudo` (administrator) privileges on your Linux system.
+*   The compiled application files (including the main executable and `Parameters.xml`) are ready.
+
+**Assumptions:**
+*   Your compiled application files are currently in a directory like `/root/GbbConnect2/GbbConnect2Console/publish_output_self_contained/`. (You will move them to `/opt/gbbconnect2console/`).
+*   The main executable is named `GbbConnect2Console`.
+
+### Steps:
+
+**1. Create a Dedicated User for the Service (Recommended for Security)**
+
+It's best practice to run services under a dedicated, non-privileged user account.
+```bash
+sudo useradd --system --no-create-home --shell /usr/sbin/nologin gbbconsoleuser
+```
+
+**2. Deploy Application Files to a Standard Location**
+
+Move your application files to a common directory for services, like `/opt/`.
+```bash
+# Create the application directory
+sudo mkdir -p /opt/gbbconnect2console
+
+# Copy your application files (replace source path if different)
+# Example source path: /root/GbbConnect2/GbbConnect2Console/publish_output_self_contained/
+sudo cp -r /path/to/your/publish_output_self_contained/* /opt/gbbconnect2console/
+
+# Set correct ownership and permissions
+sudo chown -R gbbconsoleuser:gbbconsoleuser /opt/gbbconnect2console
+sudo chmod +x /opt/gbbconnect2console/GbbConnect2Console
+```
+*Ensure your `Parameters.xml` file is copied to `/opt/gbbconnect2console/` along with the executable.*
+
+**3. Create the systemd Service File**
+
+This file tells `systemd` how to manage your application. Create it with:
+```bash
+sudo nano /etc/systemd/system/gbbconnect2console.service
+```
+Paste the following content into the file. **Read the comments and adjust if needed.**
+```ini
+[Unit]
+Description=GbbConnect2 Console Application Service
+After=network-online.target # Ensures network is up before starting
+
+[Service]
+Type=simple
+# User and Group to run the service as (created in Step 1)
+User=gbbconsoleuser
+Group=gbbconsoleuser
+
+# Working directory for the application
+# This is important if your app reads files (like Parameters.xml) from its current directory
+WorkingDirectory=/opt/gbbconnect2console
+
+# Command to start the application
+# Make sure the path to your executable is correct and include the --dont-wait-for-key flag
+ExecStart=/opt/gbbconnect2console/GbbConnect2Console --dont-wait-for-key
+
+# Restart policy
+Restart=always    # Or "on-failure"
+RestartSec=10     # Seconds to wait before restarting
+
+# Logging configuration
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=gbbconnect2console
+
+# Optional: Disable .NET telemetry for deployed apps
+Environment="DOTNET_PRINT_TELEMETRY_MESSAGE=false"
+
+[Install]
+WantedBy=multi-user.target
+```
+Save the file and exit (for `nano`: `Ctrl+X`, then `Y`, then `Enter`).
+
+**4. Enable and Start the Service**
+
+```bash
+# Reload systemd to recognize the new service file
+sudo systemctl daemon-reload
+
+# Enable the service to start automatically on boot
+sudo systemctl enable gbbconnect2console.service
+
+# Start the service immediately
+sudo systemctl start gbbconnect2console.service
+```
+
+**5. Verify the Service**
+
+```bash
+# Check the status of the service
+sudo systemctl status gbbconnect2console.service
+```
+You should see `Active: active (running)`.
+
+```bash
+# View the latest logs from your service (e.g., last 50 lines)
+sudo journalctl -u gbbconnect2console.service -n 50 --no-pager
+
+# To follow logs in real-time (press Ctrl+C to stop)
+sudo journalctl -f -u gbbconnect2console.service
+```
+
+### Managing the Service
+
+*   **To stop the service:**
+    ```bash
+    sudo systemctl stop gbbconnect2console.service
+    ```
+*   **To restart the service (e.g., after updating `Parameters.xml` or the application):**
+    ```bash
+    sudo systemctl restart gbbconnect2console.service
+    ```
+*   **To disable the service from starting on boot:**
+    ```bash
+    sudo systemctl disable gbbconnect2console.service
+    ```
+
+Your `GbbConnect2.Console` application is now configured to run persistently as a service!

@@ -158,7 +158,7 @@
             // 
             // textBox10
             // 
-            textBox10.DataBindings.Add(new Binding("Text", plantsBindingSource, "GbbVictronWeb_Mqtt_Port", true));
+            textBox10.DataBindings.Add(new Binding("Text", plantsBindingSource, "GbbOptimizer_Mqtt_Port", true));
             textBox10.Location = new Point(175, 109);
             textBox10.Name = "textBox10";
             textBox10.Size = new Size(178, 23);
@@ -176,7 +176,7 @@
             // 
             // textBox11
             // 
-            textBox11.DataBindings.Add(new Binding("Text", plantsBindingSource, "GbbVictronWeb_Mqtt_Address", true));
+            textBox11.DataBindings.Add(new Binding("Text", plantsBindingSource, "GbbOptimizer_Mqtt_Address", true));
             textBox11.Location = new Point(175, 80);
             textBox11.Name = "textBox11";
             textBox11.Size = new Size(178, 23);
@@ -193,7 +193,7 @@
             // 
             // textBox4
             // 
-            textBox4.DataBindings.Add(new Binding("Text", plantsBindingSource, "GbbVictronWeb_PlantToken", true));
+            textBox4.DataBindings.Add(new Binding("Text", plantsBindingSource, "GbbOptimizer_PlantToken", true));
             textBox4.Location = new Point(175, 51);
             textBox4.Name = "textBox4";
             textBox4.Size = new Size(178, 23);
@@ -210,7 +210,7 @@
             // 
             // textBox5
             // 
-            textBox5.DataBindings.Add(new Binding("Text", plantsBindingSource, "GbbVictronWeb_PlantId", true));
+            textBox5.DataBindings.Add(new Binding("Text", plantsBindingSource, "GbbOptimizer_PlantId", true));
             textBox5.Location = new Point(175, 22);
             textBox5.Name = "textBox5";
             textBox5.Size = new Size(178, 23);
