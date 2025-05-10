@@ -12,7 +12,7 @@ GbbConnect remarks:
 
 ## Download
 
-Last version download: [GbbConnect2.msi](http://www.gbbsoft.pl/!download/GbbConnect2/GbbConnect2Setup.msi) [setup.exe](http://www.gbbsoft.pl/!download/GbbConnect2/setup.exe)
+Last Windows version download: [GbbConnect2.msi](http://www.gbbsoft.pl/!download/GbbConnect2/GbbConnect2Setup.msi) [setup.exe](http://www.gbbsoft.pl/!download/GbbConnect2/setup.exe)
 
 ## Connection to inverter
 
@@ -30,7 +30,7 @@ Manual how setup GbbConnect2 with Deye and GbbVictronWeb: [Manual](https://gbbop
 
 ## History
 
-v1.0 - start version
+[https://github.com/gbbsoft/GbbConnect2/activity?ref=master](https://github.com/gbbsoft/GbbConnect2/activity?ref=master)
 
 # GbbConnect2Console
 
@@ -46,7 +46,7 @@ Last version download: [GbbConnect2Console.zip](http://www.gbbsoft.pl/!download/
 
 --dont-wait-for-key -  don't wait for key, but just wait forever
 
-# Docker
+# GbbConnectConsole on Docker
 
 Program GbbConnect2Console can be run in docker. File Dockerfile is present in root directory.
 
@@ -90,7 +90,7 @@ You can use GbbConnect program to create (and test) configuration file (My Docum
 </Parameters>
 ```
 
-# Compiling on Linux (Debian 12 Example)
+# Compiling GbbConnect2Console on Linux (Debian 12 Example) (Author: 6675636b6f6666)
 
 This guide explains how to compile the `GbbConnect2Console` application for Linux. The output will be a self-contained, single-file executable that can run on compatible Linux systems without requiring a separate .NET runtime installation.
 
@@ -175,7 +175,7 @@ These instructions assume you are on a Debian 12 based system. Adapt package ins
     ```
 	
 
-# Auto-Starting `GbbConnect2Console` on Linux with systemd (Athor: 6675636b6f6666)
+# Auto-Starting GbbConnect2Console on Linux with systemd (Author: 6675636b6f6666)
 
 This guide will show you how to configure your compiled `GbbConnect2.Console` application to run as a background service on Linux. This service will automatically start when the system boots and restart if it crashes.
 
