@@ -175,6 +175,12 @@ These instructions assume you are on a Debian 12 based system. Adapt package ins
     ```
 	
 
+# Script for  GbbConnect2Console on Linux (Debian 12 Example) (Author: 6675636b6f6666)
+
+Script for compiling GbbConnect2Console: [script.sh](https://github.com/gbbsoft/GbbConnect2/blob/master/script.sh)
+
+Instructional video: https://streamable.com/4prbna
+
 # Auto-Starting GbbConnect2Console on Linux with systemd (Author: 6675636b6f6666)
 
 This guide will show you how to configure your compiled `GbbConnect2.Console` application to run as a background service on Linux. This service will automatically start when the system boots and restart if it crashes.
