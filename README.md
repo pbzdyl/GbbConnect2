@@ -90,7 +90,15 @@ You can use GbbConnect program to create (and test) configuration file (My Docum
 </Parameters>
 ```
 
-# Compiling GbbConnect2Console on Linux (Debian 12 Example) (Author: 6675636b6f6666)
+# Script for  GbbConnect2Console on Linux (Debian 12 Example) (Author: https://github.com/SpengeSec)
+
+Script for compete setup of GbbConnect2Console: [script.sh](https://raw.githubusercontent.com/gbbsoft/GbbConnect2/refs/heads/master/script.sh)
+
+Instructional video: https://youtu.be/TsIzfuBWnF4
+
+... or do it manually with following two steps:
+
+# Compiling GbbConnect2Console on Linux (Debian 12 Example) (Author: https://github.com/SpengeSec)
 
 This guide explains how to compile the `GbbConnect2Console` application for Linux. The output will be a self-contained, single-file executable that can run on compatible Linux systems without requiring a separate .NET runtime installation.
 
@@ -175,13 +183,7 @@ These instructions assume you are on a Debian 12 based system. Adapt package ins
     ```
 	
 
-# Script for  GbbConnect2Console on Linux (Debian 12 Example) (Author: 6675636b6f6666)
-
-Script for compiling GbbConnect2Console: [script.sh](https://github.com/gbbsoft/GbbConnect2/blob/master/script.sh)
-
-Instructional video: https://streamable.com/4prbna
-
-# Auto-Starting GbbConnect2Console on Linux with systemd (Author: 6675636b6f6666)
+# Auto-Starting GbbConnect2Console on Linux with systemd (Author: https://github.com/SpengeSec)
 
 This guide will show you how to configure your compiled `GbbConnect2.Console` application to run as a background service on Linux. This service will automatically start when the system boots and restart if it crashes.
 
