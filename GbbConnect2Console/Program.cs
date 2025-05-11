@@ -41,22 +41,7 @@ namespace GbbConnect2Console
 
             if (DontWaitForKey)
             {
-                Console.WriteLine("Running in service mode. Press Ctrl+C to exit.");
-                // Keep the application alive until it's stopped by systemd (Ctrl+C / SIGTERM)
-                var cts = new CancellationTokenSource();
-                Console.CancelKeyPress += (sender, e) => {
-                    Console.WriteLine("Service stopping...");
-                    e.Cancel = true; // Prevent the process from terminating.
-                    cts.Cancel();
-                };
-                try
-                {
-                    Task.Delay(Timeout.Infinite, cts.Token);.
-                }
-                catch (TaskCanceledException)
-                {
-                    // Expected when stopping
-                }
+                Thread.Sleep(Timeout.Infinite);
             }
             else
             {
