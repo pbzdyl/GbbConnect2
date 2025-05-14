@@ -328,11 +328,17 @@ namespace GbbEngine2.Server
 
 
 
+                    var payload = JsonSerializer.Serialize(Header, jsonOptions);
+                    if (Parameters.IsVerboseLog)
+                    {
+                        log.OurLog(LogLevel.Information, $"{Plant.Name}: Mqtt: Send response: {payload}");
+                    }
+
                     // send response
                     await Plant.PlantState!.MqttClient!.PublishAsync(
                         new MqttApplicationMessageBuilder()
                        .WithTopic($"{Plant.GbbOptimizer_PlantId?.ToString()}/ModbusInMqtt/fromDevice")
-                       .WithPayload(JsonSerializer.Serialize(Header, jsonOptions))
+                       .WithPayload(payload)
                        .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
                        .Build()
                        , CancellationToken.None);
