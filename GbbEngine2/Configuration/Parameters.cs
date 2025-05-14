@@ -11,7 +11,7 @@ namespace GbbEngine2.Configuration
 {
     public partial class Parameters : ObservableObject
     {
-        public const string APP_VERSION = "1.0.11";
+        public const string APP_VERSION = "1.0.12";
         public static string APP_ENVIRONMENT = "Library";
 
         // ======================================

@@ -16,9 +16,11 @@ namespace GbbConnect2Console
             Console.WriteLine("GbbConnect2Console by gbbsoft");
             Console.WriteLine();
 
-            Console.WriteLine($"Version:         : {GbbEngine2.Configuration.Parameters.APP_VERSION}");
-            Console.WriteLine($"Parameters file  : {GbbEngine2.Configuration.Parameters.Parameters_GetFileName()}");
-            Console.WriteLine($"Log directory    : {GbbEngine2.Configuration.Parameters.OurGetUserBaseDirectory()}");
+            Console.WriteLine($"Version:       : {GbbEngine2.Configuration.Parameters.APP_VERSION}");
+            Console.WriteLine($"Current dir    : {Environment.CurrentDirectory}");
+            Console.WriteLine($"Base path      : {Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}");
+            Console.WriteLine($"Parameters file: {GbbEngine2.Configuration.Parameters.Parameters_GetFileName()}");
+            Console.WriteLine($"Log directory  : {GbbEngine2.Configuration.Parameters.OurGetUserBaseDirectory()}");
             Console.WriteLine();
 
             var FileName = GbbEngine2.Configuration.Parameters.Parameters_GetFileName();
