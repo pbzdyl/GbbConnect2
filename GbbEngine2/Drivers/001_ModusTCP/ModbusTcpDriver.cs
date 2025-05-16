@@ -103,45 +103,41 @@ namespace GbbEngine2.Drivers.SolarmanV5
         //
         //
 
-        public Task<byte[]> ReadHoldingRegister(byte unit, ushort startAddress, ushort numInputs)
+        public async Task<byte[]> ReadHoldingRegister(byte unit, ushort startAddress, ushort numInputs)
         {
-            throw new NotImplementedException();
-            //if (numInputs > 125)
-            //    throw new ApplicationException("Too much registers to read!");
-            //return await WriteSyncData(CreateReadHeader(unit, startAddress, numInputs, 3), false, null, startAddress);
+            if (numInputs > 125)
+                throw new ApplicationException("Too much registers to read!");
+            return await WriteSyncData(ModBus.CreateReadHeader(unit, startAddress, numInputs, 3), false, null, startAddress);
         }
 
-        public Task WriteMultipleRegister(byte unit, ushort startAddress, byte[] values)
+        public async Task WriteMultipleRegister(byte unit, ushort startAddress, byte[] values)
         {
-            throw new NotImplementedException();
+            if (values.Length > 250)
+                throw new ApplicationException("Too much registers to write!");
 
-            //if (values.Length > 250)
-            //    throw new ApplicationException("Too much registers to write!");
+            ushort numBytes = Convert.ToUInt16(values.Length);
+            if (numBytes % 2 > 0) numBytes++;
+            var AddressCount = numBytes / 2;
 
-            //ushort numBytes = Convert.ToUInt16(values.Length);
-            //if (numBytes % 2 > 0) numBytes++;
-            //var AddressCount = numBytes / 2;
+            // list of changed registers
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < AddressCount; i++)
+            {
+                sb.Append(startAddress + i);
+                sb.Append('=');
+                sb.Append(values[2 * i] * 256 + values[2 * i + 1]);
+                sb.Append(", ");
+            }
 
-            //// list of changed registers
-            //StringBuilder sb = new StringBuilder();
-            //for(int i =0; i<AddressCount; i++)
-            //{
-            //    sb.Append(startAddress + i);
-            //    sb.Append('=');
-            //    sb.Append(values[2*i] * 256 + values[2*i+1]);
-            //    sb.Append(", ");
-            //}
-
-            //byte[] data = CreateWriteHeader(unit, startAddress, Convert.ToUInt16(AddressCount), Convert.ToUInt16(numBytes), 16);
-            //Array.Copy(values, 0, data, 7, values.Length);
-            //var crc = GetCRC(data);
-            //data[data.Length - 2] = crc[0];
-            //data[data.Length - 1] = crc[1];
-            //await WriteSyncData(data, true, sb.ToString(), startAddress);
+            byte[] data = ModBus.CreateWriteHeader(unit, startAddress, Convert.ToUInt16(AddressCount), Convert.ToUInt16(numBytes), 16);
+            Array.Copy(values, 0, data, 7, values.Length);
+            var crc = ModBus.GetCRC(data);
+            data[data.Length - 2] = crc[0];
+            data[data.Length - 1] = crc[1];
+            await WriteSyncData(data, true, sb.ToString(), startAddress);
         }
 
 
-#if false
         // ------------------------------------------------------------------------
         // Write data and and wait for response
         private const int WAIT_READ_TIME_MS = 100; // ms
@@ -179,7 +175,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
                 byte[] Buf = await SendDataToDevice(write_data);
 
                 // Check Modbus CRC
-                var crc = GetCRC(Buf);
+                var crc = ModBus.GetCRC(Buf);
                 if (crc[0] != Buf[Buf.Length - 2]
                  || crc[1] != Buf[Buf.Length - 1])
                 {
@@ -247,7 +243,6 @@ namespace GbbEngine2.Drivers.SolarmanV5
                 throw new ApplicationException("Connection closed!");
         }
 
-#endif
         
         // ======================================
         // Sequence Number
@@ -338,7 +333,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
             Array.Copy(InBuf, 6, ret, 0, len2);
             
             // add CRC
-            var crc = SolarmanV5Driver.GetCRC(ret);
+            var crc = ModBus.GetCRC(ret);
             ret[len2] = crc[0];
             ret[len2+1] = crc[1];
 

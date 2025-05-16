@@ -105,7 +105,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
         {
             if (numInputs > 125)
                 throw new ApplicationException("Too much registers to read!");
-            return await WriteSyncData(CreateReadHeader(unit, startAddress, numInputs, 3), false, null, startAddress);
+            return await WriteSyncData(ModBus.CreateReadHeader(unit, startAddress, numInputs, 3), false, null, startAddress);
         }
 
         public async Task WriteMultipleRegister(byte unit, ushort startAddress, byte[] values)
@@ -127,9 +127,9 @@ namespace GbbEngine2.Drivers.SolarmanV5
                 sb.Append(", ");
             }
 
-            byte[] data = CreateWriteHeader(unit, startAddress, Convert.ToUInt16(AddressCount), Convert.ToUInt16(numBytes), 16);
+            byte[] data = ModBus.CreateWriteHeader(unit, startAddress, Convert.ToUInt16(AddressCount), Convert.ToUInt16(numBytes), 16);
             Array.Copy(values, 0, data, 7, values.Length);
-            var crc = GetCRC(data);
+            var crc = ModBus.GetCRC(data);
             data[data.Length - 2] = crc[0];
             data[data.Length - 1] = crc[1];
             await WriteSyncData(data, true, sb.ToString(), startAddress);
@@ -174,7 +174,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
                 byte[] Buf = await SendDataToDevice(write_data);
 
                 // Check Modbus CRC
-                var crc = GetCRC(Buf);
+                var crc = ModBus.GetCRC(Buf);
                 if (crc[0] != Buf[Buf.Length - 2]
                  || crc[1] != Buf[Buf.Length - 1])
                 {

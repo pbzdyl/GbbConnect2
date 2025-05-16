@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace GbbEngine2.Drivers.SolarmanV5
 {
-    public partial class SolarmanV5Driver
+    public partial class ModBus
     {
 
         // ------------------------------------------------------------------------
         // Create modbus header for read action
-        private byte[] CreateReadHeader(byte unit, ushort startAddress, ushort length, byte function)
+        public static byte[] CreateReadHeader(byte unit, ushort startAddress, ushort length, byte function)
         {
             byte[] data = new byte[8];
 
@@ -32,7 +32,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
 
         // ------------------------------------------------------------------------
         // Create modbus header for write action
-        private byte[] CreateWriteHeader(byte unit, ushort startAddress, ushort numData, ushort numBytes, byte function)
+        public static byte[] CreateWriteHeader(byte unit, ushort startAddress, ushort numData, ushort numBytes, byte function)
         {
             byte[] data = new byte[numBytes + 9];
 
