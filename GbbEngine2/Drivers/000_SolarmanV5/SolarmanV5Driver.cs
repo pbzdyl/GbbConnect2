@@ -382,7 +382,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
                             if (Frame.CheckSeqenceNumber(InBuf))
                                 break;
 
-                            if (Parameters.IsDriverLog2 && OurLog != null)
+                            if (i<9 && Parameters.IsDriverLog2 && OurLog != null)
                             {
                                 OurLog.OurLog(LogLevel.Information, $"Wrong SequenceNumber... try again...");
                             }
