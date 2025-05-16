@@ -51,7 +51,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
             return data;
         }
 
-        private byte[] GetCRC(byte[] data)
+        public static byte[] GetCRC(byte[] data)
         {
             ushort CRCFull = 0xFFFF;
             char CRCLSB;

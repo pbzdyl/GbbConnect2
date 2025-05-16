@@ -90,9 +90,14 @@ You can use GbbConnect program to create (and test) configuration file (My Docum
 </Parameters>
 ```
 
+DriverNo="0" - SolarmanV5 (wifi-dongle)
+DriverNo="1" - ModBucTCP (wired-dongle)
+
+Remark: SerialNumber: it is dongle SN, not inverter SN!
+
 # Script for  GbbConnect2Console on Linux (Debian 12 Example) (Author: https://github.com/SpengeSec)
 
-Script for compete setup of GbbConnect2Console: [script.sh](https://raw.githubusercontent.com/gbbsoft/GbbConnect2/refs/heads/master/script.sh)
+Script for compete setup of GbbConnect2Console: [https://github.com/Sp3nge/GbbConnect2Console-Installer](https://github.com/Sp3nge/GbbConnect2Console-Installer)
 
 Instructional video: https://youtu.be/TsIzfuBWnF4
 

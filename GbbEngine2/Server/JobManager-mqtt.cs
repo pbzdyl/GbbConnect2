@@ -269,9 +269,19 @@ namespace GbbEngine2.Server
                         switch (Plant.DriverNo)
                         {
                             case (int)GbbEngine2.Drivers.DriverInfo.Drivers.i000_SolarmanV5:
-                                SolarmanV5Driver sm = new SolarmanV5Driver(Parameters, Plant.AddressIP, Plant.PortNo, Plant.SerialNumber, log);
-                                sm.Connect();
-                                drv = sm;
+                                {
+                                    SolarmanV5Driver sm = new SolarmanV5Driver(Parameters, Plant.AddressIP, Plant.PortNo, Plant.SerialNumber, log);
+                                    sm.Connect();
+                                    drv = sm;
+                                }
+                                break;
+
+                            case (int)GbbEngine2.Drivers.DriverInfo.Drivers.i001_ModbusTCP:
+                                {
+                                    ModbusTcpDriver sm = new ModbusTcpDriver(Parameters, Plant.AddressIP, Plant.PortNo, Plant.SerialNumber, log);
+                                    sm.Connect();
+                                    drv = sm;
+                                }
                                 break;
 
                             case (int)GbbEngine2.Drivers.DriverInfo.Drivers.i999_Random:

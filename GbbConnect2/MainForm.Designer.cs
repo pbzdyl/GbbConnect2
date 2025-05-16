@@ -55,11 +55,7 @@
             label4 = new Label();
             label2 = new Label();
             Plants_DataGridView = new GbbLibWin.OurDataGridView();
-            InverterNumber = new DataGridViewTextBoxColumn();
-            nameDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
-            Inverter = new GbbLibWin.OurDataGridViewComboBoxColumn2();
             inverterInfoBindingSource = new BindingSource(components);
-            IsDisabled = new DataGridViewCheckBoxColumn();
             tabPage3 = new TabPage();
             groupBox4 = new GroupBox();
             checkBox1 = new CheckBox();
@@ -86,6 +82,10 @@
             StopServer_button = new Button();
             timer1 = new System.Windows.Forms.Timer(components);
             Version_label = new Label();
+            InverterNumber = new DataGridViewTextBoxColumn();
+            nameDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            Inverter = new GbbLibWin.OurDataGridViewComboBoxColumn2();
+            IsDisabled = new DataGridViewCheckBoxColumn();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             groupBox2.SuspendLayout();
@@ -323,48 +323,9 @@
             Plants_DataGridView.TabIndex = 5;
             Plants_DataGridView.RowValidating += Plants_DataGridView_RowValidating;
             // 
-            // InverterNumber
-            // 
-            InverterNumber.DataPropertyName = "Number";
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle1.BackColor = Color.FromArgb(255, 255, 192);
-            InverterNumber.DefaultCellStyle = dataGridViewCellStyle1;
-            InverterNumber.HeaderText = "No";
-            InverterNumber.Name = "InverterNumber";
-            InverterNumber.Width = 50;
-            // 
-            // nameDataGridViewTextBoxColumn
-            // 
-            nameDataGridViewTextBoxColumn.DataPropertyName = "Name";
-            dataGridViewCellStyle2.BackColor = Color.FromArgb(255, 255, 192);
-            nameDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle2;
-            nameDataGridViewTextBoxColumn.HeaderText = "Name";
-            nameDataGridViewTextBoxColumn.Name = "nameDataGridViewTextBoxColumn";
-            nameDataGridViewTextBoxColumn.Width = 200;
-            // 
-            // Inverter
-            // 
-            Inverter.DataPropertyName = "InverterNumber";
-            Inverter.DataSource = inverterInfoBindingSource;
-            Inverter.DisplayMember = "Name";
-            Inverter.DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox;
-            Inverter.HeaderText = "Inverter";
-            Inverter.Name = "Inverter";
-            Inverter.SortMode = DataGridViewColumnSortMode.Automatic;
-            Inverter.ValueMember = "DriverNo";
-            Inverter.Width = 300;
-            // 
             // inverterInfoBindingSource
             // 
             inverterInfoBindingSource.DataSource = typeof(GbbEngine2.Drivers.DriverInfo);
-            // 
-            // IsDisabled
-            // 
-            IsDisabled.DataPropertyName = "IsDisabled";
-            IsDisabled.FalseValue = "0";
-            IsDisabled.HeaderText = "IsDisabled";
-            IsDisabled.Name = "IsDisabled";
-            IsDisabled.TrueValue = "1";
             // 
             // tabPage3
             // 
@@ -646,6 +607,45 @@
             Version_label.TabIndex = 4;
             Version_label.Text = "Version:";
             // 
+            // InverterNumber
+            // 
+            InverterNumber.DataPropertyName = "Number";
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(255, 255, 192);
+            InverterNumber.DefaultCellStyle = dataGridViewCellStyle1;
+            InverterNumber.HeaderText = "No";
+            InverterNumber.Name = "InverterNumber";
+            InverterNumber.Width = 50;
+            // 
+            // nameDataGridViewTextBoxColumn
+            // 
+            nameDataGridViewTextBoxColumn.DataPropertyName = "Name";
+            dataGridViewCellStyle2.BackColor = Color.FromArgb(255, 255, 192);
+            nameDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            nameDataGridViewTextBoxColumn.HeaderText = "Name";
+            nameDataGridViewTextBoxColumn.Name = "nameDataGridViewTextBoxColumn";
+            nameDataGridViewTextBoxColumn.Width = 200;
+            // 
+            // Inverter
+            // 
+            Inverter.DataPropertyName = "DriverNo";
+            Inverter.DataSource = inverterInfoBindingSource;
+            Inverter.DisplayMember = "Name";
+            Inverter.DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox;
+            Inverter.HeaderText = "Inverter";
+            Inverter.Name = "Inverter";
+            Inverter.SortMode = DataGridViewColumnSortMode.Automatic;
+            Inverter.ValueMember = "DriverNo";
+            Inverter.Width = 300;
+            // 
+            // IsDisabled
+            // 
+            IsDisabled.DataPropertyName = "IsDisabled";
+            IsDisabled.FalseValue = "0";
+            IsDisabled.HeaderText = "IsDisabled";
+            IsDisabled.Name = "IsDisabled";
+            IsDisabled.TrueValue = "1";
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -725,10 +725,6 @@
         private GroupBox groupBox4;
         private CheckBox checkBox1;
         private CheckBox VerboseLog_checkBox;
-        private DataGridViewTextBoxColumn InverterNumber;
-        private DataGridViewTextBoxColumn nameDataGridViewTextBoxColumn;
-        private GbbLibWin.OurDataGridViewComboBoxColumn2 Inverter;
-        private DataGridViewCheckBoxColumn IsDisabled;
         private System.Windows.Forms.Timer timer1;
         private Button Clear_button;
         private Label label12;
@@ -741,5 +737,9 @@
         private TextBox textBox10;
         private TextBox textBox11;
         private Label label14;
+        private DataGridViewTextBoxColumn InverterNumber;
+        private DataGridViewTextBoxColumn nameDataGridViewTextBoxColumn;
+        private GbbLibWin.OurDataGridViewComboBoxColumn2 Inverter;
+        private DataGridViewCheckBoxColumn IsDisabled;
     }
 }

@@ -5,6 +5,7 @@
         public enum Drivers
         {
             i000_SolarmanV5 = 0,
+            i001_ModbusTCP = 1,
             i999_Random = 999,
         }
 
@@ -17,7 +18,8 @@
         {
             List<DriverInfo> ret = new();
 
-            ret.Add(new DriverInfo() { DriverNo = (int)Drivers.i000_SolarmanV5, Name = "SolarmanV5" });
+            ret.Add(new DriverInfo() { DriverNo = (int)Drivers.i000_SolarmanV5, Name = "SolarmanV5 (wifi-dongle)" });
+            ret.Add(new DriverInfo() { DriverNo = (int)Drivers.i001_ModbusTCP, Name = "ModbusTCP (wired-dongle)" });
 #if DEBUG
             ret.Add(new DriverInfo() { DriverNo = (int)Drivers.i999_Random, Name = "Random" });
 #endif
