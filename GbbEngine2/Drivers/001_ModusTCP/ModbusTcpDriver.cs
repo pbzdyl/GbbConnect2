@@ -271,7 +271,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
         {
             ArgumentNullException.ThrowIfNull(Socket);
 
-            byte[] modBusTcp = new byte[modBusData.Length + 4];
+            byte[] modBusTcp = new byte[modBusData.Length + 6 - 2];
 
             // TransactionId
             var TranId = GetNextSequenceNumber();
@@ -302,7 +302,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
 
             // check TransactionId
             if (InBuf.Length < 10)
-                throw new ApplicationException("ModBusTCP: Wrong response length!");
+                throw new ApplicationException("ModBusTCP: Response too short!");
             if (InBuf[0] != TranId[0]
                 || InBuf[1] != TranId[1])
                 throw new ApplicationException("ModBusTCP: Wrong TransactionId!");
@@ -329,6 +329,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
             // get len
             var len2 = (UInt16)(InBuf[4] << 8 | InBuf[5]);
 
+            // get ModBus data
             byte[] ret = new byte[len2+2];
             Array.Copy(InBuf, 6, ret, 0, len2);
             
@@ -358,7 +359,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
 
                         // receive
                         byte[] buffer = new byte[1024];
-                        int bytesReceived = await Socket.ReceiveAsync(buffer);
+                        int bytesReceived = Socket.Receive(buffer); // not-async to wait only 5 sec
                         if (bytesReceived == 0)
                             throw new ApplicationException("Connection Lost (received 0 bytes)");
                         byte[] InBuf = new byte[bytesReceived];

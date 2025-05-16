@@ -369,7 +369,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
 
                             byte[] buffer = new byte[1024];
                             int bytesReceived = 0;
-                            bytesReceived = await Socket.ReceiveAsync(buffer);
+                            bytesReceived = Socket.Receive(buffer); // not-async to wait only 5 sec
                             if (bytesReceived == 0)
                                 throw new ApplicationException("Connection Lost (received 0 bytes)");
                             InBuf = new byte[bytesReceived];
