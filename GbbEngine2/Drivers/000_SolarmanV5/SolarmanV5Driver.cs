@@ -361,12 +361,12 @@ namespace GbbEngine2.Drivers.SolarmanV5
                 {
                     try
                     {
-                        int bytesSent = await Socket.SendAsync(OutBuf);
-
                         // Receive (wait for my sequence number)
                         byte[] InBuf = new byte[] { };
                         for (int i = 0; i < 10; i++)
                         {
+                            int bytesSent = await Socket.SendAsync(OutBuf);
+
                             byte[] buffer = new byte[1024];
                             int bytesReceived = 0;
                             bytesReceived = await Socket.ReceiveAsync(buffer);
@@ -381,6 +381,11 @@ namespace GbbEngine2.Drivers.SolarmanV5
                             // check Sequence Number
                             if (Frame.CheckSeqenceNumber(InBuf))
                                 break;
+
+                            if (Parameters.IsDriverLog2 && OurLog != null)
+                            {
+                                OurLog.OurLog(LogLevel.Information, $"Wrong SequenceNumber... try again...");
+                            }
                         }
 
                         return InBuf;
