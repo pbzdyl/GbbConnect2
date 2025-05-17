@@ -14,7 +14,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
 
         private const int WAIT_AFTER_DISCONNECT = 500; // ms
 
-        public int Timeout { get; set; } = 5000; // 5 sec
+        public int Timeout { get; set; } = 1000; // 1 sec
 
         Configuration.Parameters Parameters;
         GbbLibSmall.IOurLog? OurLog;
