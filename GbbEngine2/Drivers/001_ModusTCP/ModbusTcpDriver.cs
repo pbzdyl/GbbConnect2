@@ -40,15 +40,19 @@ namespace GbbEngine2.Drivers.SolarmanV5
             SerialNumber = _SerialNumber.Value;
             OurLog = ourLog;
 
-            Connect();
+            //Connect();
         }
 
         public void Connect()
         {
             ArgumentNullException.ThrowIfNull(IpAddress);
 
-            if (Socket!=null && Socket.Connected)
+            if (Socket != null && Socket.Connected)
+            {
                 Socket.Close();
+                Socket.Dispose();
+                Socket = null;
+            }
 
             IPAddress? _ip;
             if (IPAddress.TryParse(IpAddress, out _ip) == false)

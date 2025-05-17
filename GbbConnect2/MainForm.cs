@@ -3,6 +3,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using GbbEngine2.Configuration;
+using GbbEngine2.Drivers;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
 
@@ -148,109 +149,78 @@ namespace GbbConnect2
         // Tests
         // ======================================
 
-        private void TestModbusTCP_button_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                this.ValidateChildren();
-                if (GbbLibWin.Log.LogMsgBox(this, "Do you want to start connection test?", MessageBoxButtons.YesNo, DialogResult.Yes, Microsoft.Extensions.Logging.LogLevel.Information) == DialogResult.Yes)
-                {
-                    foreach (var itm in Program.Parameters.Plants)
-                    {
-
-                        if (itm.IsDisabled == 0 && itm.AddressIP != null && itm.PortNo != null)
-                        {
-                            try
-                            {
-
-                                //Log($"Plant: {itm.Name}");
-                                //var driver = new ModbusTCP.Master(itm.AddressIP, (ushort)itm.PortNo);
-                                //driver.OnException += Driver_OnException;
-                                //try
-                                //{
-
-                                //    byte[] answer = { 0, 66 };
-                                //    driver.ReadHoldingRegister(1, 1, (ushort)RegisterNo_numericUpDown.Value, 2, ref answer);
-                                //    Log($"Value of {RegisterNo_numericUpDown.Value}: {answer[0] * 256 + answer[1]}");
-                                //}
-                                //finally
-                                //{
-                                //    driver.disconnect();
-                                //}
-                            }
-                            catch (Exception ex)
-                            {
-                                Log(ex.Message);
-                            }
-                        }
-
-                    }
-                    GbbLibWin.Log.LogMsgBox(this, "Done");
-
-                }
-            }
-            catch (Exception ex)
-            {
-                GbbLibWin.Log.ErrMsgBox(this, ex);
-            }
-        }
-
-        private void Driver_OnException(ushort id, byte unit, byte function, byte exception)
-        {
-            throw new ApplicationException($"Exceeption from driver: function: {function}, exception: {exception}");
-        }
-
         private async void ReadRegisters_button_Click(object sender, EventArgs e)
         {
             try
             {
                 this.ValidateChildren();
-                if (GbbLibWin.Log.LogMsgBox(this, "Do you want to start connection test?", MessageBoxButtons.YesNo, DialogResult.Yes, Microsoft.Extensions.Logging.LogLevel.Information) == DialogResult.Yes)
-                {
-                    foreach (var itm in Program.Parameters.Plants)
-                    {
 
-                        if (itm.IsDisabled == 0 && itm.AddressIP != null && itm.PortNo != null)
+                if (this.plantsBindingSource.Current != null)
+                {
+                    Plant itm = (Plant)this.plantsBindingSource.Current;
+
+
+                    if (GbbLibWin.Log.LogMsgBox(this, $"Do you want to start read registers (plant={itm.Name})?", MessageBoxButtons.YesNo, DialogResult.Yes, Microsoft.Extensions.Logging.LogLevel.Information) == DialogResult.Yes)
+                    {
+                        try
                         {
+                            Log($"Plant: {itm.Name}");
+                            IDriver? drv = null;
+                            switch (itm.DriverNo)
+                            {
+                                case (int)GbbEngine2.Drivers.DriverInfo.Drivers.i000_SolarmanV5:
+                                    {
+                                        GbbEngine2.Drivers.SolarmanV5.SolarmanV5Driver sm = new(Program.Parameters, itm.AddressIP, itm.PortNo, itm.SerialNumber, this);
+                                        sm.Connect();
+                                        drv = sm;
+                                    }
+                                    break;
+
+                                case (int)GbbEngine2.Drivers.DriverInfo.Drivers.i001_ModbusTCP:
+                                    {
+                                        GbbEngine2.Drivers.SolarmanV5.ModbusTcpDriver sm = new (Program.Parameters, itm.AddressIP, itm.PortNo, itm.SerialNumber, this);
+                                        sm.Connect();
+                                        drv = sm;
+                                    }
+                                    break;
+
+                                case (int)GbbEngine2.Drivers.DriverInfo.Drivers.i999_Random:
+                                    drv = new GbbEngine2.Drivers.Random.RandomDriver();
+                                    break;
+
+                                default:
+                                    throw new ApplicationException("Unknown driver no: " + itm.DriverNo);
+                            }
                             try
                             {
 
-                                Log($"Plant: {itm.Name}");
-                                var driver = new GbbEngine2.Drivers.SolarmanV5.SolarmanV5Driver(Program.Parameters, itm.AddressIP, itm.PortNo.Value, itm.SerialNumber ?? 0, this);
-                                try
+
+                                byte[] answer = { 0, 66 };
+                                //driver.WriteMultipleRegister(0, 1, 184, answer);
+                                answer = await drv.ReadHoldingRegister(1, (ushort)RegisterNo_numericUpDown.Value, (ushort)RegisterCount_numericUpDown.Value);
+
+                                System.Text.StringBuilder sb = new();
+                                for (int i = 0; i < RegisterCount_numericUpDown.Value; i++)
                                 {
-
-
-                                    byte[] answer = { 0, 66 };
-                                    //driver.WriteMultipleRegister(0, 1, 184, answer);
-
-                                    answer = await driver.ReadHoldingRegister(1, (ushort)RegisterNo_numericUpDown.Value, (ushort)RegisterCount_numericUpDown.Value);
-
-                                    System.Text.StringBuilder sb = new();
-                                    for (int i = 0; i < RegisterCount_numericUpDown.Value; i++)
-                                    {
-                                        sb.Append(RegisterNo_numericUpDown.Value + i);
-                                        sb.Append('=');
-                                        sb.Append(answer[i * 2] * 256 + answer[i * 2 + 1]);
-                                        sb.Append(", ");
-                                    }
-
-                                    Log($"Answer: {sb.ToString()}");
+                                    sb.Append(RegisterNo_numericUpDown.Value + i);
+                                    sb.Append('=');
+                                    sb.Append(answer[i * 2] * 256 + answer[i * 2 + 1]);
+                                    sb.Append(", ");
                                 }
-                                finally
-                                {
-                                    driver.Dispose();
-                                }
+
+                                Log($"Answer: {sb.ToString()}");
                             }
-                            catch (Exception ex)
+                            finally
                             {
-                                Log(ex.Message);
+                                drv.Dispose();
                             }
                         }
-
+                        catch (Exception ex)
+                        {
+                            Log(ex.Message);
+                        }
+                        GbbLibWin.Log.LogMsgBox(this, "Done");
                     }
-                    GbbLibWin.Log.LogMsgBox(this, "Done");
-
                 }
             }
             catch (Exception ex)

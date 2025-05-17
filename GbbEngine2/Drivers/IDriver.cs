@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GbbEngine2.Drivers
 {
-    internal interface IDriver
+    public interface IDriver
     {
         public Task<byte[]> ReadHoldingRegister(byte unit, ushort startAddress, ushort numInputs);
         public Task WriteMultipleRegister(byte unit, ushort startAddress, byte[] values);

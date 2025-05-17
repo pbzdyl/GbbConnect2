@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GbbEngine2.Drivers.Random
 {
-    internal class RandomDriver : IDriver
+    public class RandomDriver : IDriver
     {
 
         static byte[] PrevRet= { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };

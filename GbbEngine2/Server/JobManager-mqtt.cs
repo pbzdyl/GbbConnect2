@@ -260,7 +260,7 @@ namespace GbbEngine2.Server
                 if (Header != null)
                 {
                     Header.GbbVersion = Parameters.APP_VERSION;
-                    Header.GbbEnvironment = Parameters.APP_ENVIRONMENT; 
+                    Header.GbbEnvironment = Parameters.APP_ENVIRONMENT;
 
                     IDriver? drv = null;
                     try

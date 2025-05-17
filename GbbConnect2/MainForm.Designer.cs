@@ -55,7 +55,11 @@
             label4 = new Label();
             label2 = new Label();
             Plants_DataGridView = new GbbLibWin.OurDataGridView();
+            InverterNumber = new DataGridViewTextBoxColumn();
+            nameDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            Inverter = new GbbLibWin.OurDataGridViewComboBoxColumn2();
             inverterInfoBindingSource = new BindingSource(components);
+            IsDisabled = new DataGridViewCheckBoxColumn();
             tabPage3 = new TabPage();
             groupBox4 = new GroupBox();
             checkBox1 = new CheckBox();
@@ -71,7 +75,6 @@
             Search_button = new Button();
             TestSolarmanV5_button = new Button();
             Log_textBox = new TextBox();
-            TestConnections_button = new Button();
             tabPage4 = new TabPage();
             textBox7 = new TextBox();
             About_label2 = new Label();
@@ -82,10 +85,6 @@
             StopServer_button = new Button();
             timer1 = new System.Windows.Forms.Timer(components);
             Version_label = new Label();
-            InverterNumber = new DataGridViewTextBoxColumn();
-            nameDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
-            Inverter = new GbbLibWin.OurDataGridViewComboBoxColumn2();
-            IsDisabled = new DataGridViewCheckBoxColumn();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             groupBox2.SuspendLayout();
@@ -323,9 +322,48 @@
             Plants_DataGridView.TabIndex = 5;
             Plants_DataGridView.RowValidating += Plants_DataGridView_RowValidating;
             // 
+            // InverterNumber
+            // 
+            InverterNumber.DataPropertyName = "Number";
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle1.BackColor = Color.FromArgb(255, 255, 192);
+            InverterNumber.DefaultCellStyle = dataGridViewCellStyle1;
+            InverterNumber.HeaderText = "No";
+            InverterNumber.Name = "InverterNumber";
+            InverterNumber.Width = 50;
+            // 
+            // nameDataGridViewTextBoxColumn
+            // 
+            nameDataGridViewTextBoxColumn.DataPropertyName = "Name";
+            dataGridViewCellStyle2.BackColor = Color.FromArgb(255, 255, 192);
+            nameDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            nameDataGridViewTextBoxColumn.HeaderText = "Name";
+            nameDataGridViewTextBoxColumn.Name = "nameDataGridViewTextBoxColumn";
+            nameDataGridViewTextBoxColumn.Width = 200;
+            // 
+            // Inverter
+            // 
+            Inverter.DataPropertyName = "DriverNo";
+            Inverter.DataSource = inverterInfoBindingSource;
+            Inverter.DisplayMember = "Name";
+            Inverter.DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox;
+            Inverter.HeaderText = "Inverter";
+            Inverter.Name = "Inverter";
+            Inverter.SortMode = DataGridViewColumnSortMode.Automatic;
+            Inverter.ValueMember = "DriverNo";
+            Inverter.Width = 300;
+            // 
             // inverterInfoBindingSource
             // 
             inverterInfoBindingSource.DataSource = typeof(GbbEngine2.Drivers.DriverInfo);
+            // 
+            // IsDisabled
+            // 
+            IsDisabled.DataPropertyName = "IsDisabled";
+            IsDisabled.FalseValue = "0";
+            IsDisabled.HeaderText = "IsDisabled";
+            IsDisabled.Name = "IsDisabled";
+            IsDisabled.TrueValue = "1";
             // 
             // tabPage3
             // 
@@ -371,7 +409,6 @@
             Log_tabPage2.Controls.Add(Search_button);
             Log_tabPage2.Controls.Add(TestSolarmanV5_button);
             Log_tabPage2.Controls.Add(Log_textBox);
-            Log_tabPage2.Controls.Add(TestConnections_button);
             Log_tabPage2.Location = new Point(4, 24);
             Log_tabPage2.Name = "Log_tabPage2";
             Log_tabPage2.Padding = new Padding(3);
@@ -475,11 +512,11 @@
             // 
             // TestSolarmanV5_button
             // 
-            TestSolarmanV5_button.Location = new Point(252, 6);
+            TestSolarmanV5_button.Location = new Point(254, 6);
             TestSolarmanV5_button.Name = "TestSolarmanV5_button";
-            TestSolarmanV5_button.Size = new Size(199, 23);
+            TestSolarmanV5_button.Size = new Size(281, 23);
             TestSolarmanV5_button.TabIndex = 2;
-            TestSolarmanV5_button.Text = "Read register(s) from SolarmanV5";
+            TestSolarmanV5_button.Text = "Read register(s)";
             TestSolarmanV5_button.UseVisualStyleBackColor = true;
             TestSolarmanV5_button.Click += ReadRegisters_button_Click;
             // 
@@ -494,16 +531,6 @@
             Log_textBox.ScrollBars = ScrollBars.Both;
             Log_textBox.Size = new Size(941, 397);
             Log_textBox.TabIndex = 1;
-            // 
-            // TestConnections_button
-            // 
-            TestConnections_button.Location = new Point(459, 6);
-            TestConnections_button.Name = "TestConnections_button";
-            TestConnections_button.Size = new Size(143, 23);
-            TestConnections_button.TabIndex = 5;
-            TestConnections_button.Text = "Read from ModBusTCP";
-            TestConnections_button.UseVisualStyleBackColor = true;
-            TestConnections_button.Click += TestModbusTCP_button_Click;
             // 
             // tabPage4
             // 
@@ -607,45 +634,6 @@
             Version_label.TabIndex = 4;
             Version_label.Text = "Version:";
             // 
-            // InverterNumber
-            // 
-            InverterNumber.DataPropertyName = "Number";
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle1.BackColor = Color.FromArgb(255, 255, 192);
-            InverterNumber.DefaultCellStyle = dataGridViewCellStyle1;
-            InverterNumber.HeaderText = "No";
-            InverterNumber.Name = "InverterNumber";
-            InverterNumber.Width = 50;
-            // 
-            // nameDataGridViewTextBoxColumn
-            // 
-            nameDataGridViewTextBoxColumn.DataPropertyName = "Name";
-            dataGridViewCellStyle2.BackColor = Color.FromArgb(255, 255, 192);
-            nameDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle2;
-            nameDataGridViewTextBoxColumn.HeaderText = "Name";
-            nameDataGridViewTextBoxColumn.Name = "nameDataGridViewTextBoxColumn";
-            nameDataGridViewTextBoxColumn.Width = 200;
-            // 
-            // Inverter
-            // 
-            Inverter.DataPropertyName = "DriverNo";
-            Inverter.DataSource = inverterInfoBindingSource;
-            Inverter.DisplayMember = "Name";
-            Inverter.DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox;
-            Inverter.HeaderText = "Inverter";
-            Inverter.Name = "Inverter";
-            Inverter.SortMode = DataGridViewColumnSortMode.Automatic;
-            Inverter.ValueMember = "DriverNo";
-            Inverter.Width = 300;
-            // 
-            // IsDisabled
-            // 
-            IsDisabled.DataPropertyName = "IsDisabled";
-            IsDisabled.FalseValue = "0";
-            IsDisabled.HeaderText = "IsDisabled";
-            IsDisabled.Name = "IsDisabled";
-            IsDisabled.TrueValue = "1";
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -698,7 +686,6 @@
         private TabPage Log_tabPage2;
         private Button Save_button;
         private TextBox Log_textBox;
-        private Button TestConnections_button;
         private BindingSource plantsBindingSource;
         private BindingSource ParametersBindingSource;
         private TextBox textBox1;
