@@ -478,7 +478,7 @@ namespace GbbEngine2.Server
                         new MqttApplicationMessageBuilder()
                        .WithTopic($"{Plant.GbbOptimizer_PlantId?.ToString()}/ModbusInMqtt/fromDevice")
                        .WithPayload(payload)
-                       .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
+                       .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
                        .Build()
                        , CancellationToken.None);
 
