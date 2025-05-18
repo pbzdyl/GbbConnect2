@@ -19,7 +19,7 @@
             List<DriverInfo> ret = new();
 
             ret.Add(new DriverInfo() { DriverNo = (int)Drivers.i000_SolarmanV5, Name = "SolarmanV5 (wifi-dongle)" });
-            ret.Add(new DriverInfo() { DriverNo = (int)Drivers.i001_ModbusTCP, Name = "ModbusTCP (wired-dongle)" });
+            ret.Add(new DriverInfo() { DriverNo = (int)Drivers.i001_ModbusTCP, Name = "ModbusTCP (wired-dongle) (BETA)" });
 #if DEBUG
             ret.Add(new DriverInfo() { DriverNo = (int)Drivers.i999_Random, Name = "Random" });
 #endif

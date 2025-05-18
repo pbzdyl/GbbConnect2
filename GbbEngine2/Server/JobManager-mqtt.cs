@@ -397,6 +397,17 @@ namespace GbbEngine2.Server
                     }
 
                     // ==========================
+                    // To log without LastLog
+                    // ==========================
+
+                    if (Parameters.IsVerboseLog)
+                    {
+                        var payload0 = JsonSerializer.Serialize(Header, jsonOptions);
+                        log.OurLog(LogLevel.Information, $"{Plant.Name}: Mqtt: Send response: {payload0}");
+                    }
+
+
+                    // ==========================
                     // Add Last log
                     // ==========================
                     var NewLastLog_Date = Plant.PlantState?.LastLog_Date;
@@ -456,19 +467,13 @@ namespace GbbEngine2.Server
                     }
                     catch (Exception ex)
                     {
-                        log.OurLog(LogLevel.Error, $"Get Last Log: {ex.Message}");
+                        log.OurLog(LogLevel.Error, $"ERRO: Get Last Log: {ex.Message}");
                     }
 
                     // ==========================
                     // Send responce
                     // ==========================
                     var payload = JsonSerializer.Serialize(Header, jsonOptions);
-                    if (Parameters.IsVerboseLog)
-                    {
-                        log.OurLog(LogLevel.Information, $"{Plant.Name}: Mqtt: Send response: {payload}");
-                    }
-
-                    // send response
                     await Plant.PlantState!.MqttClient!.PublishAsync(
                         new MqttApplicationMessageBuilder()
                        .WithTopic($"{Plant.GbbOptimizer_PlantId?.ToString()}/ModbusInMqtt/fromDevice")
