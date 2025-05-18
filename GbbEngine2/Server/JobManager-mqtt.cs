@@ -12,6 +12,7 @@ namespace GbbEngine2.Server
     public partial class JobManager
     {
         private static MqttClientFactory mqttFactory = new();
+        DateTime? LastClearOldLogs = null;
 
         private async void OurMqttService(Configuration.Parameters Parameters, CancellationToken ct, IOurLog log)
         {
@@ -110,6 +111,26 @@ namespace GbbEngine2.Server
                     DateTime LoopStartTime = DateTime.Now;
 
                     // =====================================
+                    // Clear Old Logs
+                    // =====================================
+                    if (LastClearOldLogs == null || LastClearOldLogs.Value.Date != DateTime.Now.Date)
+                    {
+                        LastClearOldLogs = DateTime.Now;
+                        try
+                        {
+                            Parameters.DoClearOldLogs(log);
+                        }
+                        catch (TaskCanceledException)
+                        {
+                        }
+                        catch (Exception ex)
+                        {
+                            log.OurLog(LogLevel.Error, $"ClearOldLogs: {ex.Message}");
+                        }
+                    }
+
+
+                    // =====================================
                     // Connect / Reconnect
                     // =====================================
                     foreach (var plant in Parameters.Plants)
@@ -194,6 +215,8 @@ namespace GbbEngine2.Server
                             log.OurLog(LogLevel.Error, $"{plant.Name}: Mqtt: {ex.Message}");
                         }
                     }
+
+
 
                     // =====================================
                     // try keep 1min between keep-alive

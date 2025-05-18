@@ -85,6 +85,7 @@
             StopServer_button = new Button();
             timer1 = new System.Windows.Forms.Timer(components);
             Version_label = new Label();
+            checkBox3 = new CheckBox();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             groupBox2.SuspendLayout();
@@ -377,6 +378,7 @@
             // 
             // groupBox4
             // 
+            groupBox4.Controls.Add(checkBox3);
             groupBox4.Controls.Add(checkBox1);
             groupBox4.Location = new Point(3, 3);
             groupBox4.Name = "groupBox4";
@@ -634,6 +636,17 @@
             Version_label.TabIndex = 4;
             Version_label.Text = "Version:";
             // 
+            // checkBox3
+            // 
+            checkBox3.AutoSize = true;
+            checkBox3.DataBindings.Add(new Binding("Checked", ParametersBindingSource, "ClearOldLogs", true));
+            checkBox3.Location = new Point(27, 47);
+            checkBox3.Name = "checkBox3";
+            checkBox3.Size = new Size(196, 19);
+            checkBox3.TabIndex = 4;
+            checkBox3.Text = "Clear logs created 2 months ago";
+            checkBox3.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -728,5 +741,6 @@
         private DataGridViewTextBoxColumn nameDataGridViewTextBoxColumn;
         private GbbLibWin.OurDataGridViewComboBoxColumn2 Inverter;
         private DataGridViewCheckBoxColumn IsDisabled;
+        private CheckBox checkBox3;
     }
 }

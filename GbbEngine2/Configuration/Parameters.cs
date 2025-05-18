@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using GbbLibSmall;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace GbbEngine2.Configuration
 {
     public partial class Parameters : ObservableObject
     {
-        public const string APP_VERSION = "1.1.1";
+        public const string APP_VERSION = "1.2.0";
         public static string APP_ENVIRONMENT = "Library";
 
         // ======================================
@@ -33,6 +34,10 @@ namespace GbbEngine2.Configuration
         private bool m_IsDriverLog2;
 
 
+        [ObservableProperty]
+        private bool m_ClearOldLogs=true;
+
+
 
         // ======================================
         // Save and Load
@@ -48,6 +53,7 @@ namespace GbbEngine2.Configuration
             xml.WriteAttributeString("IsVerboseLog", IsVerboseLog ? "1" : "0");
             xml.WriteAttributeString("IsDriverLog", IsDriverLog ? "1" : "0");
             xml.WriteAttributeString("IsDriverLog2", IsDriverLog2 ? "1" : "0");
+            xml.WriteAttributeString("ClearOldLogs", ClearOldLogs ? "1" : "0");
 
 
             //if (CurrPlant!= null)
@@ -86,6 +92,10 @@ namespace GbbEngine2.Configuration
                 s = xml.GetAttribute("IsDriverLog2");
                 if (s != null)
                     ret.IsDriverLog2= s=="1";
+
+                s = xml.GetAttribute("ClearOldLogs");
+                if (s != null)
+                    ret.ClearOldLogs= s=="1";
 
 
                 //// for later
@@ -214,6 +224,37 @@ namespace GbbEngine2.Configuration
 
             return System.IO.Path.Combine(OurGetUserBaseDirectory(), "Parameters.xml");
         }
+
+        // ======================================
+        // Clear log
+        // ======================================
+
+        /// <summary>
+        /// delete all logs created 2 months ago
+        /// </summary>
+        public void DoClearOldLogs(IOurLog log)
+        {
+            if (ClearOldLogs)
+            {
+                DateTime d = DateTime.Now.AddMonths(-2);
+
+                // directory for log
+                string DirName = Path.Combine(OurGetUserBaseDirectory(), "Log");
+                Directory.CreateDirectory(DirName);
+
+                var l = Directory.GetFiles(DirName, $"{d:yyyy-MM}*.txt");
+                if (l.Length>0)
+                    log.OurLog(LogLevel.Information, $"ClearOldLogs: {l.Length} files from month: {d:yyyy-MM}");
+
+                foreach (var File in l)
+                {
+                        System.IO.File.Delete(File);
+                }   
+
+            }
+
+        }
+
 
     }
 }
