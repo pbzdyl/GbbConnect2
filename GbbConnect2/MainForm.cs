@@ -425,5 +425,9 @@ namespace GbbConnect2
             }
         }
 
+        public void ChangeParameterProperty(Action action)
+        {
+            this.Invoke(action);
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace GbbConnect2
         internal static void Parameters_Save()
         {
             if (Parameters != null)
-                Parameters.Save(GbbEngine2.Configuration.Parameters.Parameters_GetFileName());
+                Parameters.Save();
         }
 
 

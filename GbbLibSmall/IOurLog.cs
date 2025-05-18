@@ -60,6 +60,13 @@ namespace GbbLibSmall
 
 
         void OurLog(LogLevel LogLevel, string message, params object?[] args);
+
+        /// <summary>
+        /// Console -> just run action
+        /// Windows -> change thread to Windows tread and run action
+        /// </summary>
+        /// <param name="action"></param>
+        void ChangeParameterProperty(Action action);
     }
 
     public interface IOurLogPerc

@@ -59,6 +59,11 @@ namespace GbbConnect2Console
         {
             private object LogSync = new();
 
+            public void ChangeParameterProperty(Action action)
+            {
+                action();
+            }
+
             public void OurLog(LogLevel LogLevel, string message, params object?[] args)
             {
                 var nw = DateTime.Now;

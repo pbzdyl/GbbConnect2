@@ -35,6 +35,7 @@ namespace GbbEngine2.Server
                     }
                     catch (TaskCanceledException)
                     {
+                        throw;
                     }
                     catch (Exception ex) // eg System.Threading.Tasks.TaskCanceledException
                     {
@@ -57,6 +58,7 @@ namespace GbbEngine2.Server
             }
             catch(TaskCanceledException)
             {
+                throw;
             }
             // log
             log.OurLog(LogLevel.Information, "MqttService: finished");
@@ -72,12 +74,17 @@ namespace GbbEngine2.Server
 
             var b = new MqttClientOptionsBuilder()
                 .WithClientId($"GbbConnect2_{plant.GbbOptimizer_PlantId?.ToString()}")
-                .WithCleanSession(true)
+                //.WithCleanSession(true)
                 .WithTlsOptions(new MqttClientTlsOptions()
                 {
-                    UseTls = true,
+#if DEBUG
+                    //UseTls = true,
                     // 2023-12-15: nie ma juz potrzeby
-                    //IgnoreCertificateChainErrors = true,
+                    IgnoreCertificateChainErrors = true,
+#else
+                    UseTls = true,
+               
+#endif
                 })
                 .WithTcpServer(plant.GbbOptimizer_Mqtt_Address, plant.GbbOptimizer_Mqtt_Port)
                 .WithCredentials(plant.GbbOptimizer_PlantId?.ToString(), plant.GbbOptimizer_PlantToken);
@@ -122,6 +129,7 @@ namespace GbbEngine2.Server
                         }
                         catch (TaskCanceledException)
                         {
+                            throw;
                         }
                         catch (Exception ex)
                         {
@@ -137,8 +145,11 @@ namespace GbbEngine2.Server
                     {
                         try
                         {
-                            if (plant.PlantState!=null && plant.PlantState.MqttClient==null
-                                && plant.IsDisabled == 0 && plant.GbbOptimizer_PlantId != null && plant.GbbOptimizer_PlantToken != null)
+                            if (plant.PlantState!=null
+                                && plant.IsDisabled == 0
+                                && (plant.PlantState.MqttClient==null || !plant.PlantState.MqttClient.IsConnected)
+                                && plant.GbbOptimizer_PlantId != null 
+                                && plant.GbbOptimizer_PlantToken != null)
                             {
                                 log.OurLog(LogLevel.Information, $"{plant.Name}: Starting Mqtt");
                                 var client = mqttFactory.CreateMqttClient();
@@ -155,19 +166,10 @@ namespace GbbEngine2.Server
                                 log.OurLog(LogLevel.Information, $"{plant.Name}: Started Mqtt");
                                 Counter++;
                             }
-
-
-                            // reconnect
-                            if (plant.PlantState != null && plant.PlantState.MqttClient != null
-                                && !plant.PlantState.MqttClient.IsConnected)
-                            {
-                                log.OurLog(LogLevel.Information, $"{plant.Name}: Mqtt: Reconnect");
-                                await ConnectToMqtt(Parameters, plant, plant.PlantState.MqttClient, ct, log);
-                                log.OurLog(LogLevel.Information, $"{plant.Name}: Mqtt: Reconnected");
-                            }
                         }
                         catch (TaskCanceledException)
                         {
+                            throw;
                         }
                         catch (Exception ex)
                         {
@@ -209,6 +211,7 @@ namespace GbbEngine2.Server
                         }
                         catch (TaskCanceledException)
                         {
+                            throw;
                         }
                         catch (Exception ex) 
                         {
@@ -285,6 +288,40 @@ namespace GbbEngine2.Server
                     Header.GbbVersion = Parameters.APP_VERSION;
                     Header.GbbEnvironment = Parameters.APP_ENVIRONMENT;
 
+                    // ==========================
+                    // Change log level
+                    // ==========================
+                    if (Header.LogLevel != null)
+                    {
+                        log.ChangeParameterProperty(new Action(() =>
+                        {
+                            if (string.Compare(Header.LogLevel, Header.LogLevel_ONLY_ERRORS, true) == 0)
+                            {
+                                Parameters.IsVerboseLog = false;
+                                Parameters.IsDriverLog = false;
+                                Parameters.IsDriverLog2 = false;
+                            }
+                            else if (string.Compare(Header.LogLevel, Header.LogLevel_MIN, true) == 0)
+                            {
+                                Parameters.IsVerboseLog = true;
+                                Parameters.IsDriverLog = false;
+                                Parameters.IsDriverLog2 = false;
+                            }
+                            else if (string.Compare(Header.LogLevel, Header.LogLevel_MAX, true) == 0)
+                            {
+                                Parameters.IsVerboseLog = true;
+                                Parameters.IsDriverLog = true;
+                                Parameters.IsDriverLog2 = true;
+                            }
+                            else
+                                log.OurLog(LogLevel.Warning, $"{Plant.Name}: Mqtt: Unknown log level: {Header.LogLevel}");
+                            Parameters.Save();
+                        }));
+                    }
+
+                    // ==========================
+                    // process lines
+                    // ==========================
                     IDriver? drv = null;
                     try
                     {
@@ -359,8 +396,72 @@ namespace GbbEngine2.Server
                         }
                     }
 
+                    // ==========================
+                    // Add Last log
+                    // ==========================
+                    var NewLastLog_Date = Plant.PlantState?.LastLog_Date;
+                    var NewLastLog_Pos = Plant.PlantState?.LastLog_Pos;
 
 
+                    try
+                    {
+                        if (Header.SendLastLog != 0)
+                        {
+                            DateTime td = DateTime.Today;
+                            string DirName = Path.Combine(Parameters.OurGetUserBaseDirectory(), "Log");
+
+                            if (NewLastLog_Date == null || NewLastLog_Date < td.AddDays(-1)
+                                || NewLastLog_Pos == null)
+                            {
+                                NewLastLog_Date = td;
+                                NewLastLog_Pos = 0;
+
+                                string FileName = Path.Combine(DirName, $"{td:yyyy-MM-dd}.txt");
+                                if (File.Exists(FileName))
+                                    NewLastLog_Pos = new FileInfo(FileName).Length;
+                            }
+                            else
+                            {
+                                string FileName = Path.Combine(DirName, $"{NewLastLog_Date:yyyy-MM-dd}.txt");
+                                if (File.Exists(FileName))
+                                {
+                                    // read file
+                                    using (var fs = new FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                                    {
+                                        fs.Seek(NewLastLog_Pos.Value, SeekOrigin.Begin);
+                                        using (var sr = new StreamReader(fs))
+                                        {
+                                            string? s = sr.ReadToEnd();
+                                            if (s != null)
+                                            {
+                                                Header.LastLog = s;
+                                                NewLastLog_Pos = fs.Position;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // new day, next time send log from current day
+                                if (NewLastLog_Date == td.AddDays(-1))
+                                {
+                                    NewLastLog_Date = td;
+                                    NewLastLog_Pos = 0;
+                                }
+                            }
+                        }
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        throw;
+                    }
+                    catch (Exception ex)
+                    {
+                        log.OurLog(LogLevel.Error, $"Get Last Log: {ex.Message}");
+                    }
+
+                    // ==========================
+                    // Send responce
+                    // ==========================
                     var payload = JsonSerializer.Serialize(Header, jsonOptions);
                     if (Parameters.IsVerboseLog)
                     {
@@ -375,6 +476,11 @@ namespace GbbEngine2.Server
                        .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
                        .Build()
                        , CancellationToken.None);
+
+
+                    Plant.PlantState.LastLog_Date = NewLastLog_Date;
+                    Plant.PlantState.LastLog_Pos = NewLastLog_Pos;
+                    Plant.PlantState.OurSaveState();
 
                 }
 

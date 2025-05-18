@@ -132,6 +132,11 @@ namespace GbbEngine2.Configuration
             return ret;
         }
         // ======================================
+        public void Save()
+        {
+            Save(Parameters_GetFileName());
+        }
+        
         public void Save(string FileName) // SaveLocaly
         {
             var tmpFileName = FileName + ".tmp";

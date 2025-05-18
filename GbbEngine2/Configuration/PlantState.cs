@@ -4,27 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using GbbEngine2.Configuration;
 
-namespace GbbEngine2.Server
+namespace GbbEngine2.Configuration
 {
     internal class PlantState
     {
+        public Plant? Plant;
+
         // ======================================
         // Plant State
 
-        // Currently not used!
+        public DateTime? LastLog_Date { get; set; }
+        public long? LastLog_Pos { get; set; }
 
-        public Plant? Plant;
 
         // ======================================
         // additional properties
 
         public MQTTnet.IMqttClient? MqttClient;
 
-        //internal System.Text.StringBuilder? CurrentDayFileContent;   // up-to current hour
-        //internal System.Text.StringBuilder? CurrentHourFileContent;   // current hour (with new line on end)
-
+        
 
 
 

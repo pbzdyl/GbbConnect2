@@ -99,7 +99,7 @@ Remark: SerialNumber: it is dongle SN, not inverter SN!
 
 Script for compete setup of GbbConnect2Console: [https://github.com/Sp3nge/GbbConnect2Console-Installer](https://github.com/Sp3nge/GbbConnect2Console-Installer)
 
-Instructional video: https://youtu.be/TsIzfuBWnF4
+Instructional video: https://www.youtube.com/watch?v=1x1-wjyAsrs
 
 ... or do it manually with following two steps:
 
