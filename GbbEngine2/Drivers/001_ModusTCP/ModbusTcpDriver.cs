@@ -306,7 +306,7 @@ namespace GbbEngine2.Drivers.SolarmanV5
 
             // check TransactionId
             if (InBuf.Length < 10)
-                throw new ApplicationException("ModBusTCP: Response too short!");
+                throw new ApplicationException($"ModBusTCP: Response too short! Length={InBuf.Length}");
             if (InBuf[0] != TranId[0]
                 || InBuf[1] != TranId[1])
                 throw new ApplicationException("ModBusTCP: Wrong TransactionId!");
