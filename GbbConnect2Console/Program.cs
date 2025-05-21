@@ -33,12 +33,21 @@ namespace GbbConnect2Console
             }
             else
             {
-                var Parameters = GbbEngine2.Configuration.Parameters.Load(FileName);
+                try
+                {
+                    var Parameters = GbbEngine2.Configuration.Parameters.Load(FileName);
 
-                // start server
-                var JobManeger = new GbbEngine2.Server.JobManager();
-                var Log = new Log();
-                JobManeger.OurStartJobs(Parameters, Log);
+                    // start server
+                    var JobManeger = new GbbEngine2.Server.JobManager();
+                    var Log = new Log();
+                    JobManeger.OurStartJobs(Parameters, Log);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to load {FileName}:");
+                    Console.WriteLine(ex.ToString());
+                    DontWaitForKey = false;
+                }
             }
 
             if (DontWaitForKey)
