@@ -6,13 +6,24 @@ on:
   pull_request:
     branches: [ "master" ]
 
+env:
+  REGISTRY: ghcr.io/${{ github.repository_owner }}
+  IMAGE_NAME: gbbconnect2
+
 jobs:
-
-  build:
-
+  build-and-publish:
+    name: Build and Publish Docker Image
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+      packages: write
     steps:
     - uses: actions/checkout@v4
+    - name: Log in to the Container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag gbbconnect2:$(date +%s)
+      run: docker build . --file Dockerfile --tag "${REGISTRY}/${IMAGE_NAME}:$(date +%s)" --push
